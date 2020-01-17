@@ -1,3 +1,6 @@
+const fetchUrlTemplateDefault = (namespace,keyword, argumentCount ) => 
+  `https://raw.githubusercontent.com/codebuero/trovu-data/master/shortcuts/${namespace}/${keyword}/${argumentCount}.yml`
+
 /**
  * Fetch the content of a file behind an URL.
  *
@@ -6,21 +9,13 @@
  * @return {string} text  - The content.
  */
 async function fetchAsync(url, reload) {
-  const response = await fetch(
-    url,
-    {
-      cache: (reload ? "reload" : "force-cache")
-    }
-  );
-  if (response.status != 200) {
-    //log("Fail:    " + url);
-    log('.');
-    return null;
+  const res = await fetch(url, { cache: (reload ? "reload" : "force-cache") });
+  const content = await res.text()
+  if (!res.ok) {
+    throw new Error(`Request-Error: ${res.status} ${res.statusText}`)
   }
-  //log("Success: " + url);
-  log('.');
-  const text = await response.text();
-  return text;
+
+  return content;
 }
 
 /**
@@ -29,30 +24,11 @@ async function fetchAsync(url, reload) {
  * @param {string} namespace        - The namespace to use.
  * @param {string} keyword          - The keyword to use.
  * @param {string} argumentCount    - The argumentCount to use.
- * @param {string} fetchUrlTemplate - A template containing placeholders for all the above.
  *
  * @return {string} fetchUrl        - The URL with the replaced placeholders.
  */
-function buildFetchUrl(namespace, keyword, argumentCount, fetchUrlTemplate) {
-
-  if (!fetchUrlTemplate) {
-    fetchUrlTemplate = fetchUrlTemplateDefault;
-  }
-
-  namespace = encodeURIComponent(namespace);
-  keyword   = encodeURIComponent(keyword);
-
-  var replacements = {
-    '{%namespace}':     namespace,
-    '{%keyword}':       keyword,
-    '{%argumentCount}': argumentCount
-  }
-  var fetchUrl = fetchUrlTemplate;
-  for (key in replacements) {
-    fetchUrl = fetchUrl.replace(key, replacements[key]);
-  }
-
-  return fetchUrl;
+function buildFetchUrl(namespace, keyword, argumentCount) {
+  return fetchUrlTemplateDefault(encodeURIComponent(namespace), encodeURIComponent(keyword), argumentCount)
 }
 
 /**
@@ -143,15 +119,10 @@ function getVariablesFromString(str) {
 }
 
 async function replaceArguments(str, arguments, env) {
-
   let locale = env.language + '-' + env.country.toUpperCase();
-
   var placeholders = getArgumentsFromString(str);
-
   for (argumentName in placeholders) {
-
     var argument = arguments.shift();
-
     // Copy argument, because different placeholders can cause
     // different processing.
     var processedArgument = argument;
@@ -166,12 +137,6 @@ async function replaceArguments(str, arguments, env) {
       switch (attributes.type) {
           
         case 'date':
-
-          // Load date.js
-          if (typeof parse_date !== "function") {
-            await loadScripts(['../js/type/date.js']);
-          }
-
           let date = await parse_date(processedArgument, locale);
 
           // If date could be parsed:
@@ -187,12 +152,6 @@ async function replaceArguments(str, arguments, env) {
           break;
 
         case 'time':
-
-          // Load time.js
-          if (typeof parse_time !== "function") {
-            await loadScripts(['../js/type/time.js']);
-          }
-
           let time = await parse_time(processedArgument, locale);
 
           // If time could be parsed:
@@ -234,9 +193,7 @@ async function replaceArguments(str, arguments, env) {
 
 
 function replaceVariables(str, variables) {
-
   var placeholders = getVariablesFromString(str);
-
   for (varName in placeholders) {
     var matches = placeholders[varName];
     for (match in matches) {
@@ -258,149 +215,59 @@ function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-function log(str) {
-  //document.querySelector('#log').textContent += "\n" + str;
-  document.querySelector('#log').textContent += str;
-}
-
-async function fetchShortcuts(env, keyword, arguments) {
-  
+async function fetchShortcuts(env, keyword, args) {
+  const {
+    namespaces
+  } = env
   // Fetch all available shortcuts for our query and namespace settings.
-  var shortcuts = [];
-  let found = false;
-  for (namespace of env.namespaces) {
-    let fetchUrlTemplate = env.namespaceUrlTemplates[namespace];
-    var fetchUrl = buildFetchUrl(namespace, keyword, arguments.length, fetchUrlTemplate);
-    //log("Request: " + fetchUrl);
-    let text  = await fetchAsync(fetchUrl, env.reload);
-    shortcuts[namespace] = jsyaml.load(text);
-    if (!found) {
-      found = Boolean(shortcuts[namespace]);
+  const shortcuts = {};
+
+  for await (namespace of namespaces) {
+    const fetchUrl = buildFetchUrl(namespace, keyword, args.length);
+    try {
+      const def = await fetchAsync(fetchUrl);      
+      shortcuts[namespace] =  jsyaml.load(def);
+    } catch (e) {
+      // ignore errors like undefined shortcuts etc.
+      console.log('no or broken definition found for namespace & keyword: ', namespace, keyword)
+      continue
     }
   }
-  return [shortcuts, found];
+
+  return shortcuts;
 }
 
 async function getRedirectUrl(env) {
-
-  if (!env.query) {
-    return;  
-  }
-
   var variables = {
     language: env.language,
     country:  env.country
   };
   
-  [keyword, argumentString] = splitKeepRemainder(env.query, " ", 2);
-  if (argumentString) {
-    var arguments = argumentString.split(",");
-  } else {
-    var arguments = []; 
+  let args = []
+  let [keyword, remain] = splitKeepRemainder(env.query, " ", 2);
+  if (remain.length) {
+    args = remain.split(",");
   }
 
-  // Check for (cache) reload call.
   env.reload = false;
-  if (keyword.match(/^reload:/)) {
-    [reload, keyword] = splitKeepRemainder(keyword, ":", 2);
-    env.reload = true;
-  }
+
   // Check for extraNamespace in keyword.
   if (keyword.match(/\./)) {
-
     [extraNamespace, keyword] = splitKeepRemainder(keyword, ".", 2);
-
-    // Add to namespaces.
     env.namespaces.push(extraNamespace);
-
-    // Set variables.
-    switch (extraNamespace.length) {
-      case 2:
-        variables.language = extraNamespace;
-        break;
-      case 3:
-        variables.country = extraNamespace;
-        break;
-    }
   }
+  
+  const shortcuts = await fetchShortcuts(env, keyword, args)
+  
+  let redirectUrl = ''
 
-  [shortcuts, found] = await fetchShortcuts(env, keyword, arguments);
+  Object.keys(shortcuts).forEach((key, idx) => {
+    if (idx === 0) redirectUrl = shortcuts[key].url
+    console.log('shortcut:', key, shortcuts[key])
+  })
 
-  // If nothing found:
-  // Try without commas, i.e. with the whole argumentString as the only argument.
-  if ((!found) && (arguments.length > 0)) {
-    arguments = [argumentString];
-    [shortcuts, found] = await fetchShortcuts(env, keyword, arguments);
-  }
-
-  let redirectUrl = null;
-
-  // Find first shortcut in our namespace hierarchy.
-  for (namespace of env.namespaces.reverse()) {
-    if (shortcuts[namespace]) {
-      redirectUrl = shortcuts[namespace]['url'];
-      // TODO: Process POST arguments.
-      break;
-    }
-  }
-
-  if (!redirectUrl) {
-    return;
-  }
-
-  //log('');
-  //log("Used template: " + redirectUrl);
-  log('success.');
-
-  redirectUrl = replaceVariables(redirectUrl, variables);
-  redirectUrl = await replaceArguments(redirectUrl, arguments, env);
+  redirectUrl = replaceVariables(redirectUrl, variables)
+  redirectUrl = await replaceArguments(redirectUrl, args, env)
 
   return redirectUrl;
 }
-
-async function loadScripts(scripts) {
-    
-    function get (src) {
-        return new Promise(function (resolve, reject) {
-            var el = document.createElement("script");
-            el.async = true;
-            el.addEventListener("load", function () {
-                resolve(src);
-            }, false);
-            el.addEventListener("error", function () {
-                reject(src);
-            }, false);
-            el.src = src;
-            (document.getElementsByTagName("head")[0] || document.getElementsByTagName("body")[0]).appendChild(el);
-        });
-    }
-
-    const myPromises = scripts.map(async function (script, index) {
-        return await get(script);
-    });
-
-    return await Promise.all(myPromises);
-}
-
-document.querySelector('body').onload = async function(event) {
-
-  let env = getEnv();
-
-  let redirectUrl = await getRedirectUrl(env);
-
-  if (!redirectUrl) {
-    let params = getParams();
-    params.status = 'not_found';
-    let paramStr = jqueryParam(params);
-    redirectUrl = '../index.html#' + paramStr;
-  }
-
-  //log("Redirect to:   " + redirectUrl)
-  
-  //console.log(redirectUrl);
-  //return;
-
-  window.location.href = redirectUrl;
-}
-
-

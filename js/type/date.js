@@ -1,10 +1,4 @@
 async function parse_date(str, locale) {
-
-  // Load momentjs.
-  if (typeof moment !== "function") {
-    await loadScripts([momentjsUrl]);
-  }
-
   let date;
 
   moment.locale(locale);

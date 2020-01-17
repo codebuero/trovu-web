@@ -1,10 +1,4 @@
 async function parse_time(str, locale) {
-
-  // Load momentjs.
-  if (typeof moment !== "function") {
-    await loadScripts([momentjsUrl]);
-  }
-
   let time;
 
   let now = moment();
