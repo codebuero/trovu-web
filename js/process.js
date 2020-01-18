@@ -1,9 +1,13 @@
+import jsyaml from 'js-yaml'
 import {
   getLanguageAndCountry,
   getNamespaces,
   getParams,
   splitKeepRemainder
 } from './shared'
+
+import { parseDate } from './type/date'
+import { parseTime } from './type/time'
 
 const fetchUrlTemplateDefault = (namespace,keyword, argumentCount ) => 
   `https://raw.githubusercontent.com/codebuero/trovu-data/master/shortcuts/${namespace}/${keyword}/${argumentCount}.yml`
@@ -91,8 +95,8 @@ function getPlaceholdersFromString(str, prefix) {
     var placeholder = {};
     // Example value:
     // name_and_attributes = ['encoding=utf-8', 'another=attribute']
-    for (attrStr of nameAndAttributes) {
-      [attrName, attrValue] = attrStr.split('=', 2);
+    for (let attrStr of nameAndAttributes) {
+      let [attrName, attrValue] = attrStr.split('=', 2);
       placeholder[attrName] = attrValue;
     }
     placeholders[name] = placeholders[name] || {};
@@ -128,7 +132,7 @@ function getVariablesFromString(str) {
 async function replaceArguments(str, args, env) {
   let locale = env.language + '-' + env.country.toUpperCase();
   var placeholders = getArgumentsFromString(str);
-  for (argumentName in placeholders) {
+  for (let argumentName in placeholders) {
     var argument = args.shift();
     // Copy argument, because different placeholders can cause
     // different processing.
@@ -139,12 +143,12 @@ async function replaceArguments(str, args, env) {
     // An argument can have multiple matches,
     // so go over all of them.
     var matches = placeholders[argumentName];
-    for (match in matches) {
+    for (let match in matches) {
       var attributes = matches[match];
       switch (attributes.type) {
           
         case 'date':
-          let date = await parse_date(processedArgument, locale);
+          let date = parseDate(processedArgument, locale);
 
           // If date could be parsed:
           // Set argument.
@@ -159,7 +163,7 @@ async function replaceArguments(str, args, env) {
           break;
 
         case 'time':
-          let time = await parse_time(processedArgument, locale);
+          let time = parseTime(processedArgument, locale);
 
           // If time could be parsed:
           // Set argument.
@@ -192,8 +196,8 @@ async function replaceArguments(str, args, env) {
           processedArgument = encodeURIComponent(processedArgument);
           break;
       }
+      str = str.replace(match, processedArgument);
     }
-    str = str.replace(match, processedArgument);
   }
   return str;
 }
@@ -201,9 +205,9 @@ async function replaceArguments(str, args, env) {
 
 function replaceVariables(str, variables) {
   var placeholders = getVariablesFromString(str);
-  for (varName in placeholders) {
+  for (let varName in placeholders) {
     var matches = placeholders[varName];
-    for (match in matches) {
+    for (let match in matches) {
       var attributes = matches[match];
       switch(varName) {
         case 'now':
@@ -227,7 +231,7 @@ async function fetchShortcuts(env, keyword, args) {
     namespaces
   } = env
   // Fetch all available shortcuts for our query and namespace settings.
-  const shortcuts = {};
+  let shortcuts = {};
 
   for await (let namespace of namespaces) {
     const fetchUrl = buildFetchUrl(namespace, keyword, args.length);
@@ -237,6 +241,7 @@ async function fetchShortcuts(env, keyword, args) {
       shortcuts[namespace] =  jsyaml.load(def);
     } catch (e) {
       // ignore errors like undefined shortcuts etc.
+      console.error(e)
       console.log('no or broken definition found for namespace & keyword: ', namespace, keyword)
       continue
     }

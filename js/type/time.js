@@ -1,4 +1,6 @@
-async function parse_time(str, locale) {
+import moment from 'moment'
+
+function parseTime(str, locale) {
   let time;
 
   let now = moment();
@@ -20,7 +22,8 @@ async function parse_time(str, locale) {
     time = moment(str, 'HH:mm');
   }
   // Match '+1' and '-2'
-  if (matches = str.match(/^(-|\+)(\d+)$/)) {
+  let matches = str.match(/^(-|\+)(\d+)$/)
+  if (matches) {
     time = now;
     switch (matches[1]) {
       case '+':
@@ -33,4 +36,8 @@ async function parse_time(str, locale) {
   }
 
   return time;
+}
+
+export {
+  parseTime,
 }

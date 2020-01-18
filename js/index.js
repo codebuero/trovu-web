@@ -74,6 +74,8 @@ document.getElementById('query-form').onsubmit = async function(event) {
   //return;
   await new Promise((resolve) => setTimeout(resolve, 2500))
   // Redirect to process script.
+  toggleLoadingSpinner()
+  
 
 
   //window.location.href = redirectUrl;

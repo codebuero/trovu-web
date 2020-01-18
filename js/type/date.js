@@ -1,4 +1,6 @@
-async function parse_date(str, locale) {
+import moment from 'moment'
+
+function parseDate(str, locale) {
   let date;
 
   moment.locale(locale);
@@ -47,7 +49,8 @@ async function parse_date(str, locale) {
     date = moment(str, 'MM/DD/YYYY');
   }
   // Match '+1' or '-2'
-  if (matches = str.match(/^(-|\+)(\d+)$/)) {
+  const matches = str.match(/^(-|\+)(\d+)$/)
+  if (matches) {
     date = now;
     switch (matches[1]) {
       case '+':
@@ -67,4 +70,8 @@ async function parse_date(str, locale) {
   }
 
   return date;
+}
+
+export {
+  parseDate,
 }
