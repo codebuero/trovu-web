@@ -1,3 +1,3 @@
-# trovu-web
+# combined-web-search
 
-Read more: https://github.com/trovu/trovu.github.io/wiki
+heavily inspired by github.com/trovu/trovu-web
