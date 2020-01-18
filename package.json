@@ -1,0 +1,25 @@
+{
+  "name": "trovu-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bundle/index.js",
+  "scripts": {
+    "build": "npx rollup js/index.js --format iife --name \"multisearch\" --file bundle/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codebuero/trovu-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codebuero/trovu-web/issues"
+  },
+  "homepage": "https://github.com/codebuero/trovu-web#readme",
+  "devDependencies": {
+    "rollup": "^1.29.0"
+  },
+  "dependencies": {}
+}
