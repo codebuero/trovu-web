@@ -18,21 +18,18 @@ import {
   splitKeepRemainder
 } from './shared'
 
-let env = {}
+let env = {
+  reload: false,
+}
 
 document.querySelector('body').onload = function(event) {
  const params = getParams()
-  console.log('onload')
-  console.log(params)
 
   env = {
     ...getLanguageAndCountry(params),
     query: params.query || "",
     namespaces: getNamespaces(params, getLanguageAndCountry(params)),
   }
-
-  console.log('collected envs')
-  console.log(env)
 
   displaySettings(env);
 }
@@ -60,7 +57,6 @@ document.getElementById('query-form').onsubmit = async function(event) {
     query,
   }
 
-  console.log(params)
   toggleLoadingSpinner()
   
   let redirectUrl = await getRedirectUrl(params);
@@ -75,7 +71,6 @@ document.getElementById('query-form').onsubmit = async function(event) {
   await new Promise((resolve) => setTimeout(resolve, 2500))
   // Redirect to process script.
   toggleLoadingSpinner()
-  
 
 
   //window.location.href = redirectUrl;

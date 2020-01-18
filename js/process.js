@@ -129,7 +129,7 @@ function getVariablesFromString(str) {
   return getPlaceholdersFromString(str, '\\$')
 }
 
-async function replaceArguments(str, args, env) {
+function replaceArguments(str, args, env) {
   let locale = env.language + '-' + env.country.toUpperCase();
   var placeholders = getArgumentsFromString(str);
   for (let argumentName in placeholders) {
@@ -235,7 +235,6 @@ async function fetchShortcuts(env, keyword, args) {
 
   for await (let namespace of namespaces) {
     const fetchUrl = buildFetchUrl(namespace, keyword, args.length);
-    console.log(fetchUrl)
     try {
       const def = await fetchAsync(fetchUrl);      
       shortcuts[namespace] =  jsyaml.load(def);
@@ -262,8 +261,6 @@ async function getRedirectUrl(env) {
     args = remain.split(",");
   }
 
-  env.reload = false;
-
   // Check for extraNamespace in keyword.
   if (keyword.match(/\./)) {
     [extraNamespace, keyword] = splitKeepRemainder(keyword, ".", 2);
@@ -280,7 +277,7 @@ async function getRedirectUrl(env) {
   })
 
   redirectUrl = replaceVariables(redirectUrl, variables)
-  redirectUrl = await replaceArguments(redirectUrl, args, env)
+  redirectUrl = replaceArguments(redirectUrl, args, env)
 
   return redirectUrl;
 }
