@@ -63,4 +63,10 @@ function getLanguageAndCountry(params) {
   };
 }
 
+export {
+  getLanguageAndCountry,
+  getNamespaces,
+  getParams,
+  splitKeepRemainder
+}
 

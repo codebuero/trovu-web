@@ -1,11 +1,27 @@
+import {
+  getRedirectUrl,
+  fetchShortcuts,
+  escapeRegExp,
+  replaceVariables,
+  replaceArguments,
+  getVariablesFromString,
+  getArgumentsFromString,
+  getPlaceholdersFromString,
+  buildFetchUrl,
+  fetchAsync 
+} from './process'
+
+import {
+  getLanguageAndCountry,
+  getNamespaces,
+  getParams,
+  splitKeepRemainder
+} from './shared'
+
 let env = {}
 
 document.querySelector('body').onload = function(event) {
-
-  // Init environment.
- 
-  params = getParams()
-
+ const params = getParams()
   console.log('onload')
   console.log(params)
 
@@ -19,6 +35,16 @@ document.querySelector('body').onload = function(event) {
   console.log(env)
 
   displaySettings(env);
+}
+
+const toggleLoadingSpinner = () => {
+  const el = document.querySelector('#loadingSpinner')
+  let { style: { display } } = el
+  if (display === 'none') {
+    return el.style.display = 'block'
+  } else {
+    return el.style.display = 'none'
+  }
 }
 
 document.getElementById('query-form').onsubmit = async function(event) {
@@ -35,21 +61,20 @@ document.getElementById('query-form').onsubmit = async function(event) {
   }
 
   console.log(params)
-  $('#loadingSpinner').toggle()
+  toggleLoadingSpinner()
   
   let redirectUrl = await getRedirectUrl(params);
-  $('#loadingSpinner').toggle()
-
+  
   if (!redirectUrl) {
-    $('#redirectWarning').text('Shortcut can\'t be found in your lookiverse, you might add one first').toggle()    
+    //$('#redirectWarning').text('Shortcut can\'t be found in your lookiverse, you might add one first').toggle()    
     return
   }
   console.log(redirectUrl)
-  $('#redirectWarning').text('Redirect hitting earth in 2.5s, fasten your seat belts....').toggle()
+  //$('#redirectWarning').text('Redirect hitting earth in 2.5s, fasten your seat belts....').toggle()
   //return;
   await new Promise((resolve) => setTimeout(resolve, 2500))
   // Redirect to process script.
-  $('#redirectWarning').toggle()
+
 
   //window.location.href = redirectUrl;
 }
@@ -74,7 +99,7 @@ function displaySettings(env) {
   document.querySelector('ol.namespaces').innerHTML = '';
 
   // Show namespaces and their template URLs.
-  for (i in env.namespaces) {
+  for (let i in env.namespaces) {
     let liElement = document.createElement('li');
     liElement.setAttribute('class', 'badge badge-secondary');
     
@@ -101,17 +126,17 @@ function updateNamespaces() {
   displaySettings();
 }
 
-document.querySelector('#languageSetting').onchange = function(event) {
+document.getElementById('languageSetting').onchange = function(event) {
   env.language = event.target.value;
   updateNamespaces();
 }
 
-document.querySelector('#countrySetting').onchange = function(event) {
+document.getElementById('countrySetting').onchange = function(event) {
   env.country = event.target.value;
   updateNamespaces();
 }
 
-document.querySelector('#namespacesSetting').onchange = function(event) {
+document.getElementById('namespacesSetting').onchange = function(event) {
   env.namespaces = event.target.value.split(',');
   updateNamespaces();
 }

@@ -1,3 +1,10 @@
+import {
+  getLanguageAndCountry,
+  getNamespaces,
+  getParams,
+  splitKeepRemainder
+} from './shared'
+
 const fetchUrlTemplateDefault = (namespace,keyword, argumentCount ) => 
   `https://raw.githubusercontent.com/codebuero/trovu-data/master/shortcuts/${namespace}/${keyword}/${argumentCount}.yml`
 
@@ -118,11 +125,11 @@ function getVariablesFromString(str) {
   return getPlaceholdersFromString(str, '\\$')
 }
 
-async function replaceArguments(str, arguments, env) {
+async function replaceArguments(str, args, env) {
   let locale = env.language + '-' + env.country.toUpperCase();
   var placeholders = getArgumentsFromString(str);
   for (argumentName in placeholders) {
-    var argument = arguments.shift();
+    var argument = args.shift();
     // Copy argument, because different placeholders can cause
     // different processing.
     var processedArgument = argument;
@@ -222,8 +229,9 @@ async function fetchShortcuts(env, keyword, args) {
   // Fetch all available shortcuts for our query and namespace settings.
   const shortcuts = {};
 
-  for await (namespace of namespaces) {
+  for await (let namespace of namespaces) {
     const fetchUrl = buildFetchUrl(namespace, keyword, args.length);
+    console.log(fetchUrl)
     try {
       const def = await fetchAsync(fetchUrl);      
       shortcuts[namespace] =  jsyaml.load(def);
@@ -270,4 +278,17 @@ async function getRedirectUrl(env) {
   redirectUrl = await replaceArguments(redirectUrl, args, env)
 
   return redirectUrl;
+}
+
+export {
+  getRedirectUrl,
+  fetchShortcuts,
+  escapeRegExp,
+  replaceVariables,
+  replaceArguments,
+  getVariablesFromString,
+  getArgumentsFromString,
+  getPlaceholdersFromString,
+  buildFetchUrl,
+  fetchAsync,
 }
