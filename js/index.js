@@ -1,3 +1,5 @@
+import countriesList from 'countries-list'
+
 import {
   getRedirectUrl,
   fetchShortcuts,
@@ -22,6 +24,12 @@ let env = {
   reload: false,
 }
 
+const {
+  countries,
+  languages
+} = countriesList
+
+
 document.querySelector('body').onload = function(event) {
  const params = getParams()
 
@@ -34,8 +42,8 @@ document.querySelector('body').onload = function(event) {
   displaySettings(env);
 }
 
-const toggleLoadingSpinner = () => {
-  const el = document.querySelector('#loadingSpinner')
+const toggleElement = (id) => {
+  const el = document.querySelector(id)
   let { style: { display } } = el
   if (display === 'none') {
     return el.style.display = 'block'
@@ -43,6 +51,8 @@ const toggleLoadingSpinner = () => {
     return el.style.display = 'none'
   }
 }
+
+
 
 document.getElementById('query-form').onsubmit = async function(event) {
   const { value:query } = document.getElementById('query'); 
@@ -57,7 +67,7 @@ document.getElementById('query-form').onsubmit = async function(event) {
     query,
   }
 
-  toggleLoadingSpinner()
+  toggleElement('loadingSpinner')
   
   let redirectUrl = await getRedirectUrl(params);
   
@@ -70,7 +80,7 @@ document.getElementById('query-form').onsubmit = async function(event) {
   //return;
   await new Promise((resolve) => setTimeout(resolve, 2500))
   // Redirect to process script.
-  toggleLoadingSpinner()
+  toggleElement('loadingSpinner')
 
 
   //window.location.href = redirectUrl;
@@ -89,8 +99,6 @@ document.querySelector('#settingsClose').onclick = function(event) {
 
 function displaySettings(env) {
   // Set settings fields from environment.
-  document.querySelector('#languageSetting').value = env.language;
-  document.querySelector('#countrySetting').value = env.country;
   document.querySelector('#namespacesSetting').value = env.namespaces.join(',');
 
   document.querySelector('ol.namespaces').innerHTML = '';
@@ -132,6 +140,22 @@ document.getElementById('countrySetting').onchange = function(event) {
   env.country = event.target.value;
   updateNamespaces();
 }
+
+document.getElementById("settingsModalButton").addEventListener("click", function(e) {
+  const languageSettings = document.getElementById('languageSetting')
+  const countrySettings = document.getElementById('countrySetting')
+
+  Object.keys(languages).forEach((key) => 
+    languageSettings.appendChild(new Option(languages[key].name, key, null,env.language))
+    //`<option value="${key}">${languages[key].name}</option>`
+  )
+  Object.keys(countries).forEach((key) => 
+    countrySetting.appendChild(new Option(countries[key].name, key, null, env.country))
+    //`<option value="${key}">${countries[key].name}</option>`
+  )
+
+  toggleElement('#settingsModal');
+});
 
 document.getElementById('namespacesSetting').onchange = function(event) {
   env.namespaces = event.target.value.split(',');
