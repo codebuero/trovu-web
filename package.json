@@ -4,6 +4,7 @@
   "description": "",
   "main": "bundle/index.js",
   "scripts": {
+    "watch": "npm run build -- --watch",
     "build": "npx rollup js/index.js --config rollup.config.js --format iife --name \"multisearch\" --file bundle/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +25,7 @@
     "rollup": "^1.29.0"
   },
   "dependencies": {
+    "countries-list": "^2.5.0",
     "js-yaml": "^3.13.1",
     "moment": "^2.24.0"
   }
