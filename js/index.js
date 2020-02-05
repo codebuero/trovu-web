@@ -1,5 +1,4 @@
 import countriesList from 'countries-list'
-
 import {
   getRedirectUrl,
   fetchShortcuts,

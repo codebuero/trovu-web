@@ -21,6 +21,7 @@
   "homepage": "https://github.com/codebuero/trovu-web#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.1",
+    "@rollup/plugin-json": "^4.0.1",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "rollup": "^1.29.0"
   },
