@@ -28,7 +28,6 @@ const {
   languages
 } = countriesList
 
-
 document.querySelector('body').onload = function(event) {
  const params = getParams()
 
@@ -66,7 +65,7 @@ document.getElementById('query-form').onsubmit = async function(event) {
     query,
   }
 
-  toggleElement('loadingSpinner')
+  toggleElement('#loadingSpinner')
   
   let redirectUrl = await getRedirectUrl(params);
   
@@ -79,7 +78,7 @@ document.getElementById('query-form').onsubmit = async function(event) {
   //return;
   await new Promise((resolve) => setTimeout(resolve, 2500))
   // Redirect to process script.
-  toggleElement('loadingSpinner')
+  toggleElement('#loadingSpinner')
 
 
   //window.location.href = redirectUrl;
