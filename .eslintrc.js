@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     jest: true
   },
-  plugins: ["jest"],
+  plugins: ['jest'],
   extends: 'standard',
   overrides: [
     {
@@ -25,8 +25,8 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    "semi": 0,
-    "space-before-function-paren": ["error", "never"],
-    "no-sparse-arrays": 0,
+    'semi': 0,
+    'space-before-function-paren': ['error', 'never'],
+    'no-sparse-arrays': 0,
   }
 }
