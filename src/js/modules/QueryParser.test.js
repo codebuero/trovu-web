@@ -4,13 +4,13 @@ describe('QueryParser.parse', () => {
   test('2 arguments', () => {
     expect(QueryParser.parse('db b,hh')).toMatchObject({
       keyword: 'db',
-      args: ['b', 'hh'],
+      args: ['b', 'hh']
     });
   });
 
   test('uppercase keyword', () => {
     expect(QueryParser.parse('G foobar')).toMatchObject({
-      keyword: 'g',
+      keyword: 'g'
     });
   });
 
@@ -18,7 +18,7 @@ describe('QueryParser.parse', () => {
     expect(QueryParser.parse('pl.wg berlin')).toMatchObject({
       extraNamespaceName: 'pl',
       keyword: 'wg',
-      language: 'pl',
+      language: 'pl'
     });
   });
 });

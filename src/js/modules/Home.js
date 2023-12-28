@@ -2,16 +2,18 @@
 import '../../scss/style.scss';
 import Env from './Env.js';
 import Helper from './Helper.js';
-import Settings from './home/Settings.js';
+import { setupDOMWithEnvVariables } from './home/Settings.js';
 import Suggestions from './home/Suggestions.js';
-import BSN from 'bootstrap.native/dist/bootstrap-native.esm.min.js';
+import 'bootstrap.native/dist/bootstrap-native.esm.min.js';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.min.css';
 
 /** Set and manage the homepage. */
 
 export default class Home {
-  constructor() {}
+  constructor(logger) {
+    this.logger = logger;
+  }
 
   async initialize() {
     Helper.logVersion();
@@ -20,19 +22,19 @@ export default class Home {
     // otherwise Chrome does not autodiscover.
     this.addLinkSearch();
 
-    this.env = new Env();
+    this.env = new Env(null, this.logger);
 
     // Init environment.
     await this.env.populate();
 
-    new Settings(this.env);
+    setupDOMWithEnvVariables(this.env);
 
     this.showInfoAlerts();
     this.setLocationHash();
     this.setQueryElement();
 
     if (this.env.debug) {
-      this.env.logger.showLog();
+      this.logger.showLog();
     }
 
     document.getElementById('query-form').onsubmit = this.submitQuery;
@@ -69,7 +71,7 @@ export default class Home {
    */
   getProcessUrl() {
     const params = this.env.getParams();
-    params['query'] = document.getElementById('query').value;
+    params.query = document.getElementById('query').value;
 
     const paramStr = Env.getUrlParamStr(params);
 
@@ -93,7 +95,7 @@ export default class Home {
         break;
     }
 
-    this.suggestions = new Suggestions('#query', '#suggestions', this.env);
+    // this.suggestions = new Suggestions('#query', '#suggestions', this.env);
     this.setToggleByQuery(Home);
   }
 
@@ -110,8 +112,8 @@ export default class Home {
   toggleByQuery() {
     // Toggle display of navbar and examples.
     if (
-      document.querySelector('#query').value.trim() === '' &&
-      this.suggestions.selected === -1
+      document.querySelector('#query').value.trim() === ''
+      // &&  this.suggestions.selected === -1
     ) {
       document.querySelector('nav.navbar').style.display = 'block';
       document.querySelector('#intro').style.display = 'block';
@@ -151,7 +153,7 @@ export default class Home {
         break;
       case 'removed':
         alert.innerHTML = `The shortcut <a target="_blank" href="https://github.com/search?l=&q=${encodeURIComponent(
-          params.key,
+          params.key
         )}+repo%3Atrovu%2Ftrovu-data&type=code">
           ${params.query}</a> was removed as does not adhere to our 
           <a target="_blank" href="/docs/editors/policy/">Content policy</a>. 
@@ -197,7 +199,7 @@ export default class Home {
   addLinkSearch() {
     const params = new URLSearchParams(location.hash.substring(1));
     // Only keep relevant parameters.
-    for (const [key, value] of params.entries()) {
+    for (const [key] of params.entries()) {
       if (!['language', 'country', 'github'].includes(key)) {
         params.delete(key);
       }

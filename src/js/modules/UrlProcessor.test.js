@@ -1,11 +1,11 @@
 import UrlProcessor from './UrlProcessor.js';
 
 describe('UrlProcessor', () => {
-  test('transformEoCx', async () => {
+  test('transformEoCx', async() => {
     const expectations = {
       'ehxosxangxo cxiujxauxde': 'eĥoŝanĝo ĉiuĵaŭde',
       'EHXOSXANGXO CXIUJXAUXDE': 'EĤOŜANĜO ĈIUĴAŬDE',
-      'EHxOSxANGxO CxIUJxAUxDE': 'EĤOŜANĜO ĈIUĴAŬDE',
+      'EHxOSxANGxO CxIUJxAUxDE': 'EĤOŜANĜO ĈIUĴAŬDE'
     };
     for (const input in expectations) {
       const output = await UrlProcessor.transformEoCx(input);
@@ -13,153 +13,153 @@ describe('UrlProcessor', () => {
     }
   });
 
-  test('getVariablesFromString new', async () => {
+  test('getVariablesFromString new', async() => {
     expect(
-      UrlProcessor.getVariablesFromString('https://<$language>.<query>'),
+      UrlProcessor.getVariablesFromString('https://<$language>.<query>')
     ).toEqual({
       language: {
-        '<$language>': {},
-      },
+        '<$language>': {}
+      }
     });
   });
 
-  test('getVariablesFromString legacy', async () => {
+  test('getVariablesFromString legacy', async() => {
     expect(
-      UrlProcessor.getVariablesFromString('https://{$language}.{%query}'),
+      UrlProcessor.getVariablesFromString('https://{$language}.{%query}')
     ).toEqual({
       language: {
-        '{$language}': {},
-      },
+        '{$language}': {}
+      }
     });
   });
 
-  test('getArgumentsFromString new', async () => {
+  test('getArgumentsFromString new', async() => {
     expect(
-      UrlProcessor.getArgumentsFromString('https://<$language>.<query>'),
+      UrlProcessor.getArgumentsFromString('https://<$language>.<query>')
     ).toEqual({
       query: {
-        '<query>': {},
-      },
+        '<query>': {}
+      }
     });
   });
 
-  test('getArgumentsFromString legacy', async () => {
+  test('getArgumentsFromString legacy', async() => {
     expect(UrlProcessor.getArgumentsFromString('https://{%query}')).toEqual({
       query: {
-        '{%query}': {},
-      },
+        '{%query}': {}
+      }
     });
   });
 
   describe('getPlaceholderFromString', () => {
-    test('without attributes', async () => {
+    test('without attributes', async() => {
       expect(
-        UrlProcessor.getPlaceholdersFromString('https://<query>', ''),
+        UrlProcessor.getPlaceholdersFromString('https://<query>', '')
       ).toEqual({
         query: {
-          '<query>': {},
-        },
+          '<query>': {}
+        }
       });
     });
 
-    test('without attributes legacy', async () => {
+    test('without attributes legacy', async() => {
       expect(
-        UrlProcessor.getPlaceholdersFromStringLegacy('https://{%query}', '%'),
+        UrlProcessor.getPlaceholdersFromStringLegacy('https://{%query}', '%')
       ).toEqual({
         query: {
-          '{%query}': {},
-        },
+          '{%query}': {}
+        }
       });
     });
 
-    test('with attributes', async () => {
+    test('with attributes', async() => {
       expect(
         UrlProcessor.getPlaceholdersFromString(
           'https://<Start: { type: city }>',
-          '',
-        ),
+          ''
+        )
       ).toEqual({
         Start: {
           '<Start: { type: city }>': {
-            type: 'city',
-          },
-        },
+            type: 'city'
+          }
+        }
       });
     });
 
-    test('with attributes legacy', async () => {
+    test('with attributes legacy', async() => {
       expect(
         UrlProcessor.getPlaceholdersFromStringLegacy(
           'https://{%Start|type=city}',
-          '%',
-        ),
+          '%'
+        )
       ).toEqual({
         Start: {
           '{%Start|type=city}': {
-            type: 'city',
-          },
-        },
+            type: 'city'
+          }
+        }
       });
     });
   });
 
   describe('getPlaceholderFromMatch', () => {
-    test('without attributes', async () => {
+    test('without attributes', async() => {
       expect(UrlProcessor.getPlaceholderFromMatch([, 'query'])).toEqual({
         name: 'query',
-        placeholder: {},
+        placeholder: {}
       });
     });
 
-    test('without attributes legacy', async () => {
+    test('without attributes legacy', async() => {
       expect(UrlProcessor.getPlaceholderFromMatchLegacy([, 'query'])).toEqual({
         name: 'query',
-        placeholder: {},
+        placeholder: {}
       });
     });
 
-    test('with attributes', async () => {
+    test('with attributes', async() => {
       expect(
-        UrlProcessor.getPlaceholderFromMatch([, 'Start: { type: city}']),
+        UrlProcessor.getPlaceholderFromMatch([, 'Start: { type: city}'])
       ).toEqual({
         name: 'Start',
         placeholder: {
-          type: 'city',
-        },
+          type: 'city'
+        }
       });
     });
 
-    test('with attributes legacy', async () => {
+    test('with attributes legacy', async() => {
       expect(
-        UrlProcessor.getPlaceholderFromMatchLegacy([, 'Start|type=city']),
+        UrlProcessor.getPlaceholderFromMatchLegacy([, 'Start|type=city'])
       ).toEqual({
         name: 'Start',
         placeholder: {
-          type: 'city',
-        },
+          type: 'city'
+        }
       });
     });
   });
 
   describe('processAttributeEncoding', () => {
-    test('default', async () => {
+    test('default', async() => {
       expect(UrlProcessor.processAttributeEncoding({}, 'ÄÖÜäöü')).toEqual(
-        '%C3%84%C3%96%C3%9C%C3%A4%C3%B6%C3%BC',
+        '%C3%84%C3%96%C3%9C%C3%A4%C3%B6%C3%BC'
       );
     });
 
-    test('iso-8859-1', async () => {
+    test('iso-8859-1', async() => {
       expect(
         UrlProcessor.processAttributeEncoding(
           { encoding: 'iso-8859-1' },
-          'ÄÖÜäöü',
-        ),
+          'ÄÖÜäöü'
+        )
       ).toEqual('%C4%D6%DC%E4%F6%FC');
     });
 
-    test('none', async () => {
+    test('none', async() => {
       expect(
-        UrlProcessor.processAttributeEncoding({ encoding: 'none' }, 'ÄÖÜäöü'),
+        UrlProcessor.processAttributeEncoding({ encoding: 'none' }, 'ÄÖÜäöü')
       ).toEqual('ÄÖÜäöü');
     });
   });

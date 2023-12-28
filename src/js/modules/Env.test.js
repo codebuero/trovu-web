@@ -12,7 +12,7 @@ describe('Env', () => {
       env.getNavigatorLanguage = jest.fn(() => 'en-DE');
       expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
         language: 'en',
-        country: 'de',
+        country: 'de'
       });
     });
     test('browser returns only language', () => {
@@ -20,7 +20,7 @@ describe('Env', () => {
       env.getNavigatorLanguage = jest.fn(() => 'en');
       expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
         language: 'en',
-        country: 'us',
+        country: 'us'
       });
     });
   });

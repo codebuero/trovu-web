@@ -10,15 +10,15 @@ describe('NamespaceFetcher.getInitialNamespaceInfo', () => {
   test('site', () => {
     const env = new Env();
     expect(new NamespaceFetcher(env).getInitalNamespaceInfo('de')).toEqual({
-      name: 'de',
+      name: 'de'
     });
   });
   test('github', () => {
     const env = new Env();
     expect(new NamespaceFetcher(env).getInitalNamespaceInfo('johndoe')).toEqual(
       {
-        name: 'johndoe',
-      },
+        name: 'johndoe'
+      }
     );
   });
 });
@@ -29,23 +29,23 @@ describe('NamespaceFetcher.addNamespaceInfo', () => {
     expect(
       new NamespaceFetcher(env).addNamespaceInfo({
         name: 'de',
-        shortcuts: true,
-      }),
+        shortcuts: true
+      })
     ).toEqual({
       name: 'de',
       shortcuts: true,
-      type: 'site',
+      type: 'site'
     });
   });
   test('github', () => {
     const env = new Env();
     expect(
-      new NamespaceFetcher(env).addNamespaceInfo({ name: 'johndoe' }),
+      new NamespaceFetcher(env).addNamespaceInfo({ name: 'johndoe' })
     ).toEqual({
       github: 'johndoe',
       name: 'johndoe',
       type: 'user',
-      url: `https://raw.githubusercontent.com/johndoe/trovu-data-user/master/shortcuts.yml?${env.commitHash}`,
+      url: `https://raw.githubusercontent.com/johndoe/trovu-data-user/master/shortcuts.yml?${env.commitHash}`
     });
   });
 });
@@ -72,11 +72,11 @@ describe('NamespaceFetcher.processInclude', () => {
       new NamespaceFetcher(new Env()).processInclude(
         shortcut,
         'leo',
-        cloneObject(namespaceInfos),
-      ),
+        cloneObject(namespaceInfos)
+      )
     ).toMatchObject({
       url: 'https://dict.leo.org/französisch-deutsch/{%word}',
-      title: 'Allemand-Français (leo.org)',
+      title: 'Allemand-Français (leo.org)'
     });
   });
 
@@ -90,11 +90,11 @@ describe('NamespaceFetcher.processInclude', () => {
       new NamespaceFetcher(new Env()).processInclude(
         shortcut,
         '',
-        cloneObject(namespaceInfos),
-      ),
+        cloneObject(namespaceInfos)
+      )
     ).toMatchObject({
       url: 'https://dict.leo.org/französisch-deutsch/{%word}',
-      title: 'Französisch-Deutsch (leo.org)',
+      title: 'Französisch-Deutsch (leo.org)'
     });
   });
 
@@ -107,11 +107,11 @@ describe('NamespaceFetcher.processInclude', () => {
       new NamespaceFetcher(new Env({ language: 'de' })).processInclude(
         shortcut,
         'leo',
-        cloneObject(namespaceInfos),
-      ),
+        cloneObject(namespaceInfos)
+      )
     ).toMatchObject({
       url: 'https://dict.leo.org/französisch-deutsch/{%word}',
-      title: 'Französisch-Deutsch (leo.org)',
+      title: 'Französisch-Deutsch (leo.org)'
     });
   });
 
@@ -137,7 +137,7 @@ describe('NamespaceFetcher.processInclude', () => {
       new NamespaceFetcher(new Env({})).processInclude(
         shortcut,
         'leo',
-        namespaceInfosLoop,
+        namespaceInfosLoop
       );
     }).toThrow(Error);
   });
@@ -168,11 +168,11 @@ describe('NamespaceFetcher.processInclude', () => {
       new NamespaceFetcher(new Env({ language: 'de' })).processInclude(
         shortcut,
         'o',
-        namespaceInfosMultiple,
-      ),
+        namespaceInfosMultiple
+      )
     ).toMatchObject({
       title: 'Französisch-Deutsch (leo.org)',
-      url: 'https://dict.leo.org/französisch-deutsch/{%word}',
+      url: 'https://dict.leo.org/französisch-deutsch/{%word}'
     });
   });
 });
@@ -193,7 +193,7 @@ describe('NamespaceFetcher.addReachable', () => {
 
   test('standard', () => {
     expect(
-      new NamespaceFetcher(new Env({})).addReachable(namespaceInfos),
+      new NamespaceFetcher(new Env({})).addReachable(namespaceInfos)
     ).toEqual(
       jsyaml.load(`
         o:
@@ -208,7 +208,7 @@ describe('NamespaceFetcher.addReachable', () => {
             eo 1:
               title: Esperanto-Wörterbuch
               reachable: true
-      `),
+      `)
     );
   });
 });
@@ -218,11 +218,11 @@ describe('NamespaceFetcher.addInfo', () => {
     expect(
       new NamespaceFetcher(new Env({})).addInfo(
         {
-          url: 'https://reiseauskunft.bahn.de/bin/query.exe/d?S={%Start}&Z={%Ziel}&timesel=depart&start=1',
+          url: 'https://reiseauskunft.bahn.de/bin/query.exe/d?S={%Start}&Z={%Ziel}&timesel=depart&start=1'
         },
         'db 2',
-        '.de',
-      ),
+        '.de'
+      )
     ).toEqual(
       jsyaml.load(`
         url: https://reiseauskunft.bahn.de/bin/query.exe/d?S={%Start}&Z={%Ziel}&timesel=depart&start=1
@@ -236,7 +236,7 @@ describe('NamespaceFetcher.addInfo', () => {
           Ziel:
             '{%Ziel}': {}
         title: '' 
-    `),
+    `)
     );
   });
 });

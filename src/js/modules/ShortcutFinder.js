@@ -1,6 +1,3 @@
-/** @module ShortcutFinder */
-import Helper from './Helper.js';
-
 /** Find matching shortcut. */
 
 export default class ShortcutFinder {
@@ -37,14 +34,14 @@ export default class ShortcutFinder {
       env.args,
       env.namespaceInfos,
       env.reload,
-      env.debug,
+      env.debug
     );
 
     // If nothing found:
     // Try without commas, i.e. with the whole argumentString as the only argument.
     if (!shortcut && env.args.length > 0) {
       env.logger.info(
-        `No shortcut found for ${env.keyword} ${env.args.length} yet. Trying with the whole argument string as the only argument.`,
+        `No shortcut found for ${env.keyword} ${env.args.length} yet. Trying with the whole argument string as the only argument.`
       );
       env.args = [env.argumentString];
       shortcut = await this.matchShortcuts(
@@ -52,7 +49,7 @@ export default class ShortcutFinder {
         env.args,
         env.namespaceInfos,
         env.reload,
-        env.debug,
+        env.debug
       );
     }
 
@@ -60,7 +57,7 @@ export default class ShortcutFinder {
     // Try default keyword.
     if (!shortcut && env.defaultKeyword) {
       env.logger.info(
-        `No shortcut found for ${env.keyword} ${env.args.length} yet. Trying with default keyword.`,
+        `No shortcut found for ${env.keyword} ${env.args.length} yet. Trying with default keyword.`
       );
       env.args = [env.query];
       shortcut = await this.matchShortcuts(
@@ -68,7 +65,7 @@ export default class ShortcutFinder {
         env.args,
         env.namespaceInfos,
         env.reload,
-        env.debug,
+        env.debug
       );
     }
     return shortcut;

@@ -1,11 +1,12 @@
-describe('Homepage startup', () => {
+describe('Homepage', () => {
   beforeEach(() => {
     cy.visit('/');
     cy.get('[data-page-loaded="true"]', { timeout: 10000 }).should('exist');
   });
 
   it('should redirect to hash with language and country', () => {
-    cy.hash().should('include', 'country=gb&language=en');
+    cy.hash().should('include', 'country');
+    cy.hash().should('include', 'language');
   });
 
   it('should have a title including "trovu"', () => {

@@ -19,7 +19,7 @@ export default class QueryParser {
     Object.assign(env, QueryParser.setFlagsFromQuery(env));
 
     [env.keyword, env.argumentString] = this.getKeywordAndArgumentString(
-      env.query,
+      env.query
     );
     env.keyword = env.keyword.toLowerCase();
     env.args = this.getArguments(env.argumentString);
@@ -28,7 +28,7 @@ export default class QueryParser {
     if (env.extraNamespaceName) {
       const languageOrCountry =
         this.getLanguageAndCountryFromExtraNamespaceName(
-          env.extraNamespaceName,
+          env.extraNamespaceName
         );
       Object.assign(env, languageOrCountry);
     }
@@ -96,15 +96,15 @@ export default class QueryParser {
       [extraNamespaceName, keyword] = Helper.splitKeepRemainder(
         keyword,
         '.',
-        2,
+        2
       );
       // If extraNamespace started with a dot, it will be empty
       // so let's split it again, and add the dot.
-      if (extraNamespaceName == '') {
+      if (extraNamespaceName === '') {
         [extraNamespaceName, keyword] = Helper.splitKeepRemainder(
           keyword,
           '.',
-          2,
+          2
         );
         extraNamespaceName = '.' + extraNamespaceName;
       }

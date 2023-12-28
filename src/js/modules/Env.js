@@ -15,16 +15,18 @@ export default class Env {
    *
    * @param {object} env - The environment variables.
    */
-  constructor(env) {
+  constructor(env, logger) {
     this.setToThis(env);
     if (pkg.gitCommitHash) {
       this.commitHash = pkg.gitCommitHash.slice(0, 7);
     } else {
       this.commitHash = 'unknown';
     }
+    this.logger = logger;
+  }
 
-    this.configUrlTemplate = `https://raw.githubusercontent.com/{%github}/trovu-data-user/master/config.yml?${this.commitHash}`;
-    this.logger = new Logger('#log');
+  getConfigUrlTemplate(github) {
+    return `https://raw.githubusercontent.com/${github}/trovu-data-user/master/config.yml?${this.commitHash}`;
   }
 
   /**
@@ -37,6 +39,7 @@ export default class Env {
     if (!env) {
       return;
     }
+    console.log(env);
     for (const key in env) {
       this[key] = env[key];
     }
@@ -52,30 +55,30 @@ export default class Env {
 
     // Put environment into hash.
     if (this.github) {
-      params['github'] = this.github;
+      params.github = this.github;
     } else {
-      params['language'] = this.language;
-      params['country'] = this.country;
+      params.language = this.language;
+      params.country = this.country;
     }
     if (this.debug) {
-      params['debug'] = 1;
+      params.debug = 1;
     }
     // Don't add defaultKeyword into params
     // when Github user is set.
     if (this.defaultKeyword && !this.github) {
-      params['defaultKeyword'] = this.defaultKeyword;
+      params.defaultKeyword = this.defaultKeyword;
     }
     if (this.status) {
-      params['status'] = this.status;
+      params.status = this.status;
     }
     if (this.query) {
-      params['query'] = this.query;
+      params.query = this.query;
     }
     if (this.alternative) {
-      params['alternative'] = this.alternative;
+      params.alternative = this.alternative;
     }
     if (this.key) {
-      params['key'] = this.key;
+      params.key = this.key;
     }
 
     return params;
@@ -136,7 +139,7 @@ export default class Env {
 
     this.data = await this.getData();
     this.namespaceInfos = await new NamespaceFetcher(this).getNamespaceInfos(
-      this.namespaces,
+      this.namespaces
     );
 
     // Remove extra namespace if it turned out to be invalid.
@@ -152,7 +155,7 @@ export default class Env {
 
   /**
      Check if namespace is valid.
-   * @param {string} namespace 
+   * @param {string} namespace
    * @returns {boolean}
    */
   isValidNamespace(namespace) {
@@ -202,10 +205,7 @@ export default class Env {
    * @return {(object|boolean)} config - The user's config object, or false if fetch failed.
    */
   async getUserConfigFromGithub(params) {
-    const configUrl = this.configUrlTemplate.replace(
-      '{%github}',
-      params.github,
-    );
+    const configUrl = this.getConfigUrlTemplate(params.github);
     const configYml = await Helper.fetchAsync(configUrl, this);
     if (!configYml) {
       this.logger.error(`Error reading Github config from ${configUrl}`);
@@ -270,24 +270,24 @@ export default class Env {
   async setDefaults() {
     let language, country;
 
-    if (typeof this.language != 'string' || typeof this.country != 'string') {
+    if (typeof this.language !== 'string' || typeof this.country !== 'string') {
       ({ language, country } = await this.getDefaultLanguageAndCountry());
     }
 
     // Default language.
-    if (typeof this.language != 'string') {
+    if (typeof this.language !== 'string') {
       this.language = language;
     }
     // Default country.
-    if (typeof this.country != 'string') {
+    if (typeof this.country !== 'string') {
       this.country = country;
     }
     // Default namespaces.
-    if (typeof this.namespaces != 'object') {
+    if (typeof this.namespaces !== 'object') {
       this.namespaces = ['o', this.language, '.' + this.country];
     }
     // Default debug.
-    if (typeof this.debug != 'boolean') {
+    if (typeof this.debug !== 'boolean') {
       this.debug = Boolean(this.debug);
     }
   }
@@ -297,9 +297,9 @@ export default class Env {
    * @returns {Object} An object containing the fetched data.
    */
   async getData() {
-    let text;
+    let text, url;
     if (typeof window !== 'undefined') {
-      const url = `/data.json?${this.commitHash}`;
+      url = `/data.json?${this.commitHash}`;
       text = await Helper.fetchAsync(url, this);
     } else {
       const fs = require('fs');

@@ -86,12 +86,12 @@ export default class CallHandler {
 
     response.redirectUrl = UrlProcessor.replaceVariables(response.redirectUrl, {
       language: env.language,
-      country: env.country,
+      country: env.country
     });
     response.redirectUrl = await UrlProcessor.replaceArguments(
       response.redirectUrl,
       env.args,
-      env,
+      env
     );
 
     return response;
@@ -102,7 +102,7 @@ export default class CallHandler {
     for (const i in env.args) {
       alternative = alternative.replace(
         '<' + (parseInt(i) + 1) + '>',
-        env.args[i],
+        env.args[i]
       );
     }
     return alternative;

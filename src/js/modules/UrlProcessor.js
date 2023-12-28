@@ -101,7 +101,7 @@ export default class UrlProcessor {
     const placeholders = {};
     Object.assign(
       placeholders,
-      this.getPlaceholdersFromString(str, '(?![\\$])'),
+      this.getPlaceholdersFromString(str, '(?![\\$])')
     );
     Object.assign(placeholders, this.getPlaceholdersFromStringLegacy(str, '%'));
     return placeholders;
@@ -152,15 +152,15 @@ export default class UrlProcessor {
     processedArgument = await this.processAttributeType(
       attributes,
       processedArgument,
-      env,
+      env
     );
     processedArgument = this.processAttributeTransform(
       attributes,
-      processedArgument,
+      processedArgument
     );
     processedArgument = this.processAttributeEncoding(
       attributes,
-      processedArgument,
+      processedArgument
     );
     return processedArgument;
   }
@@ -172,14 +172,14 @@ export default class UrlProcessor {
         processedArgument = await this.processTypeDate(
           processedArgument,
           locale,
-          attributes,
+          attributes
         );
         break;
       case 'time':
         processedArgument = await this.processTypeTime(
           processedArgument,
           locale,
-          attributes,
+          attributes
         );
         break;
       case 'city':
@@ -324,7 +324,7 @@ export default class UrlProcessor {
       Hx: 'Ĥ',
       Jx: 'Ĵ',
       Sx: 'Ŝ',
-      Ux: 'Ŭ',
+      Ux: 'Ŭ'
     };
 
     const regex = new RegExp(Object.keys(charMap).join('|'), 'g');
