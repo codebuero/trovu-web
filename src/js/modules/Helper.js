@@ -29,7 +29,7 @@ export default class Helper {
    * @return {string} str   - The escaped string.
    */
   static escapeRegExp(str) {
-    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+    return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
   }
 
   /**
@@ -41,18 +41,18 @@ export default class Helper {
    */
   static async fetchAsync(url, env) {
     const response = await fetch(url, {
-      cache: env.reload ? 'reload' : 'force-cache',
+      cache: env.reload ? 'reload' : 'force-cache'
     });
-    if (response.status != 200) {
+    if (response.status !== 200) {
       env.logger.info(
         `Problem fetching via ${env.reload ? 'reload' : 'cache'} ${url}: ${
           response.status
-        }`,
+        }`
       );
       return null;
     }
     env.logger.success(
-      `Success fetching via ${env.reload ? 'reload' : 'cache'} ${url}`,
+      `Success fetching via ${env.reload ? 'reload' : 'cache'} ${url}`
     );
     const text = await response.text();
     return text;
@@ -60,9 +60,9 @@ export default class Helper {
 
   static logVersion() {
     console.log(
-      `Trovu running version`,
+      'Trovu running version',
       pkg.gitCommitHash.slice(0, 7),
-      pkg.gitDate,
+      pkg.gitDate
     );
   }
 }

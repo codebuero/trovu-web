@@ -4,15 +4,13 @@ import Env from './Env.js';
 import Helper from './Helper.js';
 import Settings from './home/Settings.js';
 import Suggestions from './home/Suggestions.js';
-import BSN from 'bootstrap.native/dist/bootstrap-native.esm.min.js';
+import 'bootstrap.native/dist/bootstrap-native.esm.min.js';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.min.css';
 
 /** Set and manage the homepage. */
 
 export default class Home {
-  constructor() {}
-
   async initialize() {
     Helper.logVersion();
 
@@ -69,7 +67,7 @@ export default class Home {
    */
   getProcessUrl() {
     const params = this.env.getParams();
-    params['query'] = document.getElementById('query').value;
+    params.query = document.getElementById('query').value;
 
     const paramStr = Env.getUrlParamStr(params);
 
@@ -151,7 +149,7 @@ export default class Home {
         break;
       case 'removed':
         alert.innerHTML = `The shortcut <a target="_blank" href="https://github.com/search?l=&q=${encodeURIComponent(
-          params.key,
+          params.key
         )}+repo%3Atrovu%2Ftrovu-data&type=code">
           ${params.query}</a> was removed as does not adhere to our 
           <a target="_blank" href="/docs/editors/policy/">Content policy</a>. 
@@ -197,7 +195,7 @@ export default class Home {
   addLinkSearch() {
     const params = new URLSearchParams(location.hash.substring(1));
     // Only keep relevant parameters.
-    for (const [key, value] of params.entries()) {
+    for (const [key] of params.entries()) {
       if (!['language', 'country', 'github'].includes(key)) {
         params.delete(key);
       }

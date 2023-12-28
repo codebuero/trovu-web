@@ -6,7 +6,6 @@ const actions = {};
 const fs = require('fs');
 const isValidDomain = require('is-valid-domain');
 const jsyaml = require('js-yaml');
-const languages = require('@cospired/i18n-iso-languages');
 const modifiers = {};
 
 let ymlDirPath;
@@ -17,7 +16,7 @@ async function main() {
     return;
   }
 
-  ymlDirPath = `./data/shortcuts/`;
+  ymlDirPath = './data/shortcuts/';
 
   const action = process.argv[2];
   if (action in actions) {
@@ -53,11 +52,11 @@ function writeYmls(ymls) {
       if (shortcut.examples && !Array.isArray(shortcut.examples)) {
         const examples = [];
         for (const [argumentString, description] of Object.entries(
-          shortcut.examples,
+          shortcut.examples
         )) {
           const example = {
             arguments: argumentString,
-            description: description,
+            description
           };
           examples.push(example);
         }
@@ -79,24 +78,23 @@ function writeYmls(ymls) {
     // make sure, subkeys are in reverse particular order: url, post_params, description, tags, examples
     const ymlStr = jsyaml.dump(ymlSorted, {
       noArrayIndent: true,
-      lineWidth: -1,
+      lineWidth: -1
     });
     fs.writeFileSync(ymlFilePath, ymlStr);
   }
   return ymls;
 }
 
-actions['normalize'] = async function () {
+actions.normalize = async function() {
   const ymls = loadYmls();
   writeYmls(ymls);
 };
 
-actions['compile-data'] = async function () {
+actions['compile-data'] = async function() {
   const ymls = loadYmls();
   const compiled = {};
-  compiled['shortcuts'] = {};
+  compiled.shortcuts = {};
   for (const ymlFileName in ymls) {
-    const yml = ymls[ymlFileName];
     const namespace = ymlFileName.replace('.yml', '');
     compiled.shortcuts[namespace] = ymls[ymlFileName];
   }
@@ -106,7 +104,7 @@ actions['compile-data'] = async function () {
 function sortObject(obj) {
   return Object.keys(obj)
     .sort()
-    .reduce(function (result, key) {
+    .reduce(function(result, key) {
       result[key] = obj[key];
       return result;
     }, {});
@@ -132,8 +130,8 @@ async function fetchWithTimeout(resource, options = {}) {
       signal: controller.signal,
       headers: {
         'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
-      },
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+      }
     });
   } catch (e) {
     return { status: 500 };
@@ -142,12 +140,12 @@ async function fetchWithTimeout(resource, options = {}) {
   return response;
 }
 
-actions['testFetch'] = async function () {
+actions.testFetch = async function() {
   const response = await fetchWithTimeout(process.argv[3]);
   console.log(response);
 };
 
-actions['listKeys'] = async function () {
+actions.listKeys = async function() {
   const ymlsAll = loadYmls();
   const ymls = {};
   const ymlFileName = process.argv[3] + '.yml';
@@ -160,7 +158,7 @@ actions['listKeys'] = async function () {
   }
 };
 
-actions['applyModifier'] = async function () {
+actions.applyModifier = async function() {
   const ymlsAll = loadYmls();
   const ymls = {};
   const ymlFileName = `${process.argv[4].trim()}.yml`;
@@ -179,7 +177,7 @@ actions['applyModifier'] = async function () {
   console.log('Done');
 };
 
-actions['createDictionaryScaffold'] = async function () {
+actions.createDictionaryScaffold = async function() {
   const langs = getLanguageList();
   const dcm_langs_str =
     'ar bg ca cs da de el en es et fi fr he hr hu id it ja ko lt lv nl no pl pt ro ru sk sl sr sv th tr uk vi zh';
@@ -188,20 +186,20 @@ actions['createDictionaryScaffold'] = async function () {
   for (let i = 0; i < dcmLangs.length - 1; i++) {
     scaffold[dcmLangs[i]] = {};
     for (let j = i + 1; j < dcmLangs.length; j++) {
-      const template = `https://www.dict.com/${langs['en'][
+      const template = `https://www.dict.com/${langs.en[
         dcmLangs[i]
-      ].toLowerCase()}-${langs['en'][dcmLangs[j]].toLowerCase()}/`;
+      ].toLowerCase()}-${langs.en[dcmLangs[j]].toLowerCase()}/`;
       scaffold[dcmLangs[i]][dcmLangs[j]] = [template, template + '{%word}'];
     }
   }
   const scaffoldStr = jsyaml.dump(scaffold, {
     noArrayIndent: true,
-    lineWidth: -1,
+    lineWidth: -1
   });
   console.log(scaffoldStr);
 };
 
-modifiers['addTagOld'] = async function (key, shortcut) {
+modifiers.addTagOld = async function(key, shortcut) {
   if (!shortcut.tags) {
     shortcut.tags = [];
   }
@@ -209,18 +207,18 @@ modifiers['addTagOld'] = async function (key, shortcut) {
   return shortcut;
 };
 
-modifiers['removeYahooCurrencyConverters'] = async function (key, shortcut) {
-  if (shortcut.title.search(new RegExp('^Convert .*Yahoo.$')) > -1) {
+modifiers.removeYahooCurrencyConverters = async function(key, shortcut) {
+  if (shortcut.title.search(/^Convert .*Yahoo.$/) > -1) {
     console.log('Removing ', shortcut.title);
     return false;
   }
   return shortcut;
 };
 
-modifiers['removeGoogleMapsCities'] = async function (key, shortcut) {
+modifiers.removeGoogleMapsCities = async function(key, shortcut) {
   if (
-    key.search(new RegExp('^gm.+')) > -1 &&
-    !key.match(new RegExp('^gm(b|hh|m|k|f|s|d|l|do|e|hb|dd|h|n|du) 1'))
+    key.search(/^gm.+/) > -1 &&
+    !key.match(/^gm(b|hh|m|k|f|s|d|l|do|e|hb|dd|h|n|du) 1/)
   ) {
     console.log('Removing', shortcut.title);
     return false;
@@ -228,38 +226,37 @@ modifiers['removeGoogleMapsCities'] = async function (key, shortcut) {
   return shortcut;
 };
 
-modifiers['deprecateGoogleMapsCities'] = async function (key, shortcut) {
+modifiers.deprecateGoogleMapsCities = async function(key, shortcut) {
   let matches;
-  if ((matches = key.match(new RegExp('^gm(.+) ')))) {
+  if ((matches = key.match(/^gm(.+) /))) {
     const city = matches[1];
     console.log('Deprecating', shortcut.title);
     shortcut.deprecated = {
       alternative: {
-        query: `gm ${city},{%1}`,
+        query: `gm ${city},{%1}`
       },
-      created: '2023-01-07',
+      created: '2023-01-07'
     };
     console.log(shortcut);
   }
   return shortcut;
 };
 
-modifiers['removeDictionaryDashIncludes'] = async function (key, shortcut) {
-  let matches;
-  if ((matches = key.match(new RegExp('^..-...'))) && shortcut.include) {
+modifiers.removeDictionaryDashIncludes = async function(key, shortcut) {
+  if ((key.match(/^..-.../)) && shortcut.include) {
     console.log(`Removing ${key}`);
     return false;
   }
   return shortcut;
 };
 
-modifiers['removeDeadDomains'] = async function (key, shortcut) {
+modifiers.removeDeadDomains = async function(key, shortcut) {
   const skipDomains = [
     'colourlovers.com',
     'iafd.com',
     'tcodesearch.com',
     'debian.org',
-    'reddit.com',
+    'reddit.com'
   ];
   for (const skipDomain of skipDomains) {
     if (shortcut.url.search(new RegExp(skipDomain, 'i')) > -1) {
@@ -281,7 +278,7 @@ modifiers['removeDeadDomains'] = async function (key, shortcut) {
   try {
     // console.log(testUrl, "...");
     const response = await fetchWithTimeout(testUrl);
-    if (response.status != 200) {
+    if (response.status !== 200) {
       console.log(response.status, testUrl);
       return false;
     }
@@ -293,13 +290,13 @@ modifiers['removeDeadDomains'] = async function (key, shortcut) {
   return shortcut;
 };
 
-modifiers['checkShortcutResponse'] = async function (key, shortcut) {
+modifiers.checkShortcutResponse = async function(key, shortcut) {
   if (shortcut.deprecated) {
     return shortcut;
   }
   // Only letter a for now.
   if (!key[0].match(/[^a-z]/)) {
-    //return shortcut;
+    // return shortcut;
   }
   let url = shortcut.url;
   const args = ['foo', 'bar', 'baz', 'a', 'b', 'c'];
@@ -308,13 +305,13 @@ modifiers['checkShortcutResponse'] = async function (key, shortcut) {
   url = UrlProcessor.replaceVariables(url, env);
   console.log(key);
   const response = await fetchWithTimeout(url);
-  if (response.status != 200) {
+  if (response.status !== 200) {
     console.log(response.status, url);
   }
   return shortcut;
 };
 
-actions['setDictionaryIncludes'] = async function () {
+actions.setDictionaryIncludes = async function() {
   const dicts = getDictionaries();
   const langs = {};
   for (const dict in dicts) {
@@ -353,7 +350,7 @@ actions['setDictionaryIncludes'] = async function () {
           }
           yml[`${lang} ${argCount}`].include.push({
             key: `${lang} ${argCount}`,
-            namespace: dict,
+            namespace: dict
           });
         }
       }
@@ -362,7 +359,7 @@ actions['setDictionaryIncludes'] = async function () {
   writeYmls(ymls);
 };
 
-actions['setDictionaries'] = async function () {
+actions.setDictionaries = async function() {
   const langs = getLanguageList();
   const t = jsyaml.load(fs.readFileSync('src/yml/translations.yml', 'utf8'));
   const dicts = getDictionaries();
@@ -387,22 +384,22 @@ actions['setDictionaries'] = async function () {
         shortcuts[getKey(lang1, lang2, 0)] = {
           url: dicts[dict].pairs[lang1][lang2][0],
           title: getTitle(lang1, lang2, dicts[dict].name),
-          tags: getTags(lang1, lang2),
+          tags: getTags(lang1, lang2)
         };
         shortcuts[getKey(lang1, lang2, 1)] = {
           url: dicts[dict].pairs[lang1][lang2][1],
           title: getTitle(lang1, lang2, dicts[dict].name),
           tags: getTags(lang1, lang2),
-          examples: getExamples(lang1, lang2),
+          examples: getExamples(lang1, lang2)
         };
         shortcuts[getKey(lang2, lang1, 0)] = {
           title: getTitle(lang2, lang1, dicts[dict].name),
-          include: { key: getKey(lang1, lang2, 0) },
+          include: { key: getKey(lang1, lang2, 0) }
         };
         shortcuts[getKey(lang2, lang1, 1)] = {
           title: getTitle(lang2, lang1, dicts[dict].name),
           include: { key: getKey(lang1, lang2, 1) },
-          examples: getExamples(lang2, lang1),
+          examples: getExamples(lang2, lang1)
         };
       }
     }
@@ -422,13 +419,13 @@ actions['setDictionaries'] = async function () {
     for (const lang of langs) {
       ymls[`${dict}.yml`][`${lang} 0`] = {
         include: {
-          key: lang + '-{$language} 0',
-        },
+          key: lang + '-{$language} 0'
+        }
       };
       ymls[`${dict}.yml`][`${lang} 1`] = {
         include: {
-          key: lang + '-{$language} 1',
-        },
+          key: lang + '-{$language} 1'
+        }
       };
     }
   }
@@ -439,15 +436,15 @@ actions['setDictionaries'] = async function () {
   }
   function getTitle(lang1, lang2, name) {
     return `${capitalize(langs[lang2][lang1])}-${capitalize(
-      langs[lang2][lang2],
+      langs[lang2][lang2]
     )} (${name})`;
   }
   function getTags(lang1, lang2) {
     return [
       'dictionary',
       'language',
-      anticapitalize(langs['en'][lang1]),
-      anticapitalize(langs['en'][lang2]),
+      anticapitalize(langs.en[lang1]),
+      anticapitalize(langs.en[lang2])
     ];
   }
   function getExamples(lang1, lang2) {
@@ -457,7 +454,7 @@ actions['setDictionaries'] = async function () {
         .replace('{tree}', t.tree[lang1]),
       [t.tree[lang2]]: t.desc[lang2]
         .replace('{lang}', langs[lang2][lang1])
-        .replace('{tree}', t.tree[lang2]),
+        .replace('{tree}', t.tree[lang2])
     };
   }
   function capitalize(str) {
@@ -487,8 +484,8 @@ function getLanguageList() {
     const lang = jsyaml.load(
       fs.readFileSync(
         `./node_modules/languagelist/data/${dir}/language.yaml`,
-        'utf8',
-      ),
+        'utf8'
+      )
     );
     langs[dir] = lang;
   }

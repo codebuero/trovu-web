@@ -22,29 +22,34 @@ export default class Logger {
       return;
     }
     this.logs.push({
-      level: level,
-      message: message,
+      level,
+      message
     });
     console.log(level, message);
     if (this.logElement) {
       this.logElement.textContent += `${message}\n`;
     }
   }
+
   info(message) {
     this.log('info', message);
   }
+
   warning(message) {
     this.log('warning', message);
     this.showLog();
   }
+
   success(message) {
     this.log('success', message);
   }
+
   error(message) {
     this.log('error', message);
     this.showLog();
     throw new Error(message);
   }
+
   showLog() {
     if (this.logElement) {
       this.logElement.removeAttribute('hidden');

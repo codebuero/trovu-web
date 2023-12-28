@@ -80,7 +80,7 @@ function migratePlaceholders(options) {
         shortcut.include.key = replacePlaceholders(
           shortcut.include.key,
           namespace,
-          key,
+          key
         );
       }
       data.shortcuts[namespace][key] = shortcut;
@@ -93,12 +93,12 @@ function replacePlaceholders(str, namespace, key) {
   for (const prefix of ['%', '\\$']) {
     const placeholders = UrlProcessor.getPlaceholdersFromStringLegacy(
       str,
-      prefix,
+      prefix
     );
     for (const placeholderName in placeholders) {
       if (isOnlyNumber(placeholderName)) {
         console.log(
-          `Warning: In shortcut ${namespace}.${key}, placeholder name ${placeholderName} is only a number.`,
+          `Warning: In shortcut ${namespace}.${key}, placeholder name ${placeholderName} is only a number.`
         );
       }
       let newPlaceholder;
@@ -113,7 +113,7 @@ function replacePlaceholders(str, namespace, key) {
       }
       const newPlaceholderYaml = jsyaml
         .dump(newPlaceholder, {
-          flowLevel: 1,
+          flowLevel: 1
         })
         .trim();
       let newPlaceholderYamlBrackets = '<';
@@ -141,16 +141,16 @@ function migrateExamples(options) {
   const data = DataManager.load(options);
   for (const namespace in data.shortcuts) {
     for (const key in data.shortcuts[namespace]) {
-      let shortcut = data.shortcuts[namespace][key];
+      const shortcut = data.shortcuts[namespace][key];
       // Normalize examples.
       if (shortcut.examples && !Array.isArray(shortcut.examples)) {
         const examples = [];
         for (const [argumentString, description] of Object.entries(
-          shortcut.examples,
+          shortcut.examples
         )) {
           const example = {
             arguments: argumentString,
-            description: description,
+            description
           };
           examples.push(example);
         }

@@ -7,9 +7,9 @@ describe('DataManager.load', () => {
       expect.objectContaining({
         shortcuts: expect.anything(),
         types: expect.objectContaining({
-          city: expect.anything(),
-        }),
-      }),
+          city: expect.anything()
+        })
+      })
     );
   });
 });

@@ -10,13 +10,13 @@ export default class DataManager {
   static load(options = {}) {
     options = this.getDefaultOptions(options);
     const data = {};
-    data['shortcuts'] = DataManager.readYmls(
+    data.shortcuts = DataManager.readYmls(
       `${options.data}/${options.shortcuts}/`,
-      options.filter,
+      options.filter
     );
-    data['types'] = {};
-    data['types']['city'] = DataManager.readYmls(
-      `${options.data}/${options.types}/city/`,
+    data.types = {};
+    data.types.city = DataManager.readYmls(
+      `${options.data}/${options.types}/city/`
     );
     return data;
   }
@@ -30,11 +30,11 @@ export default class DataManager {
     this.normalizeTags(data.shortcuts);
     DataManager.writeYmls(
       `${options.data}/${options.shortcuts}/`,
-      data.shortcuts,
+      data.shortcuts
     );
     DataManager.writeYmls(
       `${options.data}/${options.types}/city/`,
-      data.types.city,
+      data.types.city
     );
   }
 
@@ -80,7 +80,7 @@ export default class DataManager {
       if (error.code === 'ENOENT') {
         console.log(`Warning: No such directory: ${ymlDirPath}`);
       } else {
-        throw err;
+        throw error;
       }
     }
     // Filter files by filter.
@@ -110,7 +110,7 @@ export default class DataManager {
       const filePath = `${ymlDirPath}/${fileRoot}.yml`;
       const str = jsyaml.dump(dataByFileRoot[fileRoot], {
         noArrayIndent: true,
-        lineWidth: -1,
+        lineWidth: -1
       });
       fs.writeFileSync(filePath, str, 'utf8');
     }
@@ -119,7 +119,7 @@ export default class DataManager {
   static sortObject(obj) {
     return Object.keys(obj)
       .sort()
-      .reduce(function (result, key) {
+      .reduce(function(result, key) {
         result[key] = obj[key];
         return result;
       }, {});

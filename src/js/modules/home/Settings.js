@@ -16,16 +16,17 @@ export default class Settings {
 
     window.addEventListener(
       'hashchange',
-      function () {
+      function() {
         window.location.reload();
       },
-      false,
+      false
     );
   }
 
   /**
    * Update settings wherever they are displayed.
    */
+
   displaySettings() {
     // Set settings fields in navbar.
     const language = countriesList.languages[this.env.language];
@@ -87,10 +88,10 @@ export default class Settings {
     list.forEach((item) =>
       selectEl.appendChild(
         new Option(
-          `${item.name} ${item.emoji ? item.emoji : ``}`,
-          item.key.toLocaleLowerCase(),
-        ),
-      ),
+          `${item.name} ${item.emoji ? item.emoji : ''}`,
+          item.key.toLocaleLowerCase()
+        )
+      )
     );
   }
 }

@@ -9,11 +9,11 @@
 // @grant        none
 // ==/UserScript==
 
-(function () {
+(function() {
   'use strict';
 
   const params = new URLSearchParams(
-    decodeURIComponent(window.location.hash.substring(1)),
+    decodeURIComponent(window.location.hash.substring(1))
   );
 
   // Process 'fill' params and set values.

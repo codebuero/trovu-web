@@ -41,7 +41,7 @@ export default class Suggestions {
         event.preventDefault();
         this.selected = Math.min(
           this.suggestions.length - 1,
-          this.selected + 1,
+          this.selected + 1
         );
         this.updateSuggestions();
       }
@@ -60,7 +60,7 @@ export default class Suggestions {
       return;
     }
     if (this.query === '') {
-      this.helpDiv.innerHTML = `Select with ⬆️ ⬇️ for examples, click on<span class="namespace">namespace</span>or <span class="tag">tag</span> to filter.`;
+      this.helpDiv.innerHTML = 'Select with ⬆️ ⬇️ for examples, click on<span class="namespace">namespace</span>or <span class="tag">tag</span> to filter.';
     } else {
       this.helpDiv.innerHTML = '';
     }
@@ -77,7 +77,7 @@ export default class Suggestions {
     this.suggestionsList.appendChild(fragment);
     if (this.selected > -1) {
       const selectedLi = this.suggestionsList.querySelector(
-        'li[aria-selected="true"]',
+        'li[aria-selected="true"]'
       );
       if (selectedLi) {
         this.ensureElementIsVisibleInContainer(selectedLi, this.suggestionsDiv);
@@ -92,7 +92,7 @@ export default class Suggestions {
     li.setAttribute('role', 'option');
     li.setAttribute(
       'aria-selected',
-      index === this.selected ? 'true' : 'false',
+      index === this.selected ? 'true' : 'false'
     );
     const fragment = document.createDocumentFragment();
     fragment.appendChild(this.getMain(suggestion));
@@ -106,7 +106,7 @@ export default class Suggestions {
   }
 
   select(index) {
-    if (this.selected == index) {
+    if (this.selected === index) {
       this.selected = -1;
     } else {
       this.selected = index;
@@ -279,7 +279,7 @@ export default class Suggestions {
     const icons = {
       city: '🏙️',
       date: '📅',
-      time: '🕒',
+      time: '🕒'
     };
 
     const argsFragment = document.createDocumentFragment();
@@ -341,7 +341,7 @@ export default class Suggestions {
       matches.tagMiddleReachable,
       matches.tagMiddleUnreachable,
       matches.urlMiddleReachable,
-      matches.urlMiddleUnreachable,
+      matches.urlMiddleUnreachable
     );
 
     return suggestions;
@@ -368,7 +368,7 @@ export default class Suggestions {
       tagMiddleReachable: [],
       tagMiddleUnreachable: [],
       urlMiddleReachable: [],
-      urlMiddleUnreachable: [],
+      urlMiddleUnreachable: []
     };
     const env = QueryParser.parse(query);
     const [regExp, filters] = this.getRegExpAndFilters(query);
@@ -378,13 +378,13 @@ export default class Suggestions {
         if (shortcut.deprecated || shortcut.removed) {
           continue;
         }
-        if (query == '') {
+        if (query === '') {
           if (shortcut.showOnHome && shortcut.reachable) {
             matches.showOnHome.push(shortcut);
             continue;
           }
         }
-        if (filters.namespace && filters.namespace != shortcut.namespace) {
+        if (filters.namespace && filters.namespace !== shortcut.namespace) {
           continue;
         }
         if (
@@ -396,7 +396,7 @@ export default class Suggestions {
         if (filters.url && !shortcut.url.includes(filters.url)) {
           continue;
         }
-        if (env.keyword == shortcut.keyword) {
+        if (env.keyword === shortcut.keyword) {
           if (shortcut.reachable) {
             matches.keywordFullReachable.push(shortcut);
           } else {
@@ -405,7 +405,7 @@ export default class Suggestions {
           continue;
         }
         let pos = shortcut.keyword.search(regExp);
-        if (pos == 0) {
+        if (pos === 0) {
           if (shortcut.reachable) {
             matches.keywordBeginReachable.push(shortcut);
           } else {
@@ -414,7 +414,7 @@ export default class Suggestions {
           continue;
         }
         pos = shortcut.title.search(regExp);
-        if (pos == 0) {
+        if (pos === 0) {
           if (shortcut.reachable) {
             matches.titleBeginReachable.push(shortcut);
           } else {
