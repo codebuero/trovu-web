@@ -11,6 +11,10 @@ import 'font-awesome/css/font-awesome.min.css';
 /** Set and manage the homepage. */
 
 export default class Home {
+  constructor(logger) {
+    this.logger = logger;
+  }
+
   async initialize() {
     Helper.logVersion();
 
@@ -18,7 +22,7 @@ export default class Home {
     // otherwise Chrome does not autodiscover.
     this.addLinkSearch();
 
-    this.env = new Env();
+    this.env = new Env(null, this.logger);
 
     // Init environment.
     await this.env.populate();
@@ -30,7 +34,7 @@ export default class Home {
     this.setQueryElement();
 
     if (this.env.debug) {
-      this.env.logger.showLog();
+      this.logger.showLog();
     }
 
     document.getElementById('query-form').onsubmit = this.submitQuery;
@@ -91,7 +95,7 @@ export default class Home {
         break;
     }
 
-    this.suggestions = new Suggestions('#query', '#suggestions', this.env);
+    // this.suggestions = new Suggestions('#query', '#suggestions', this.env);
     this.setToggleByQuery(Home);
   }
 
@@ -108,8 +112,8 @@ export default class Home {
   toggleByQuery() {
     // Toggle display of navbar and examples.
     if (
-      document.querySelector('#query').value.trim() === '' &&
-      this.suggestions.selected === -1
+      document.querySelector('#query').value.trim() === ''
+      // &&  this.suggestions.selected === -1
     ) {
       document.querySelector('nav.navbar').style.display = 'block';
       document.querySelector('#intro').style.display = 'block';
