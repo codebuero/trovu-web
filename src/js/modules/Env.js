@@ -15,14 +15,14 @@ export default class Env {
    *
    * @param {object} env - The environment variables.
    */
-  constructor(env) {
+  constructor(env, logger) {
     this.setToThis(env);
     if (pkg.gitCommitHash) {
       this.commitHash = pkg.gitCommitHash.slice(0, 7);
     } else {
       this.commitHash = 'unknown';
     }
-    this.logger = new Logger('#log');
+    this.logger = logger;
   }
 
   getConfigUrlTemplate(github) {
@@ -81,6 +81,8 @@ export default class Env {
       params.key = this.key;
     }
 
+    this.logger.info('in env');
+    this.logger.info(params);
     return params;
   }
 

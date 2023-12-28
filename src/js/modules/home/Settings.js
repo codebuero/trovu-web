@@ -1,7 +1,6 @@
 /** @module Settings */
 import countriesList from 'countries-list';
 const { countries, languages } = countriesList;
-
 let _env;
 
 const transformCountryObjectToOptionList = (obj) => {

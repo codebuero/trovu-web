@@ -11,37 +11,32 @@ export default class Logger {
     if (!(typeof document === 'undefined')) {
       this.logElement = document.querySelector(logElementSelector);
     }
+    const params = new URLSearchParams(window.location.hash);
+    if (params.get('debug') === '1') { 
+      this.showLog();
+    }
   }
 
   log(level, message) {
-    // Check if message is already in this.logs
-    // if yes, do not log again
-    if (
-      this.logs.some((log) => log.level === level && log.message === message)
-    ) {
-      return;
-    }
     this.logs.push({
       level,
       message
     });
-    console.log(level, message);
     if (this.logElement) {
       this.logElement.textContent += `${message}\n`;
     }
   }
 
   info(message) {
-    this.log('info', message);
+    this.log('info', JSON.stringify(message, null, 2));
   }
 
   warning(message) {
-    this.log('warning', message);
-    this.showLog();
+    this.log('warning', JSON.stringify(message, null, 2));
   }
 
   success(message) {
-    this.log('success', message);
+    this.log('success', JSON.stringify(message, null, 2));
   }
 
   error(message) {
