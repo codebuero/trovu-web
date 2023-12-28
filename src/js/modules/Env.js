@@ -81,8 +81,6 @@ export default class Env {
       params.key = this.key;
     }
 
-    this.logger.info('in env');
-    this.logger.info(params);
     return params;
   }
 
