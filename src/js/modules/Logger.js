@@ -6,13 +6,13 @@ export default class Logger {
   /**
    * Set helper variables.
    */
-  constructor(logElementSelector) {
+  constructor(logElementSelector, debug = false) {
     this.logs = [];
     if (!(typeof document === 'undefined')) {
       this.logElement = document.querySelector(logElementSelector);
     }
-    const params = new URLSearchParams(window.location.hash);
-    if (params.get('debug') === '1') { 
+    
+    if (debug) {
       this.showLog();
     }
   }

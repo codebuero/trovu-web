@@ -1,8 +1,10 @@
-import CallHandler from '../src/js/modules/CallHandler.js';
-import Env from '../src/js/modules/Env.js';
 import fs from 'fs';
 import 'isomorphic-fetch';
 import jsyaml from 'js-yaml';
+
+import CallHandler from '../src/js/modules/CallHandler.js';
+import Env from '../src/js/modules/Env.js';
+import Logger from '../src/js/modules/Logger.js';
 
 main();
 
@@ -20,15 +22,15 @@ global.fetch = jest.fn((url) => {
   if (url.includes('/testuser/trovu-data-user/master/config.yml')) {
     return Promise.resolve({
       status: 200,
-      text: () => Promise.resolve('defaultKeyword: g'),
+      text: async () => Promise.resolve('defaultKeyword: g')
     });
   } else if (url.includes('/testuser/trovu-data-user/master/shortcuts.yml')) {
     return Promise.resolve({
       status: 200,
-      text: () =>
+      text: async () =>
         Promise.resolve(
-          'keyword1 1: https://www.google.com/search?hl=en&q=keyword1%20{%query}&ie=utf-8',
-        ),
+          'keyword1 1: https://www.google.com/search?hl=en&q=keyword1%20{%query}&ie=utf-8'
+        )
     });
   }
 });
@@ -38,7 +40,7 @@ afterEach(() => {
 });
 
 async function testCall(call) {
-  const env = new Env();
+  const env = new Env(null, new Logger());
   env.language = 'en';
   env.country = 'us';
   await env.populate(call.env);

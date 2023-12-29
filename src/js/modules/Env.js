@@ -1,7 +1,6 @@
 /** @module Env */
 import pkg from '../../../package.json';
 import Helper from './Helper.js';
-import Logger from './Logger.js';
 import NamespaceFetcher from './NamespaceFetcher.js';
 import QueryParser from './QueryParser.js';
 import countriesList from 'countries-list';
