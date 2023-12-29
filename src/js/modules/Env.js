@@ -118,8 +118,8 @@ export default class Env {
 
     // Assign before, to also catch "debug" and "reload" in params and query.
     Object.assign(this, params);
-    const params_from_query = QueryParser.parse(this.query);
-    Object.assign(this, params_from_query);
+    const _queryParams = QueryParser.parse(this.query);
+    Object.assign(this, _queryParams);
 
     if (typeof params.github === 'string' && params.github !== '') {
       await this.setWithUserConfigFromGithub(params);
@@ -127,7 +127,7 @@ export default class Env {
 
     // Assign again, to override user config.
     Object.assign(this, params);
-    Object.assign(this, params_from_query);
+    Object.assign(this, _queryParams);
 
     await this.setDefaults();
 

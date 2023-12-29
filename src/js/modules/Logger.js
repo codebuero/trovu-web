@@ -11,7 +11,7 @@ export default class Logger {
     if (!(typeof document === 'undefined')) {
       this.logElement = document.querySelector(logElementSelector);
     }
-    
+
     if (debug) {
       this.showLog();
     }

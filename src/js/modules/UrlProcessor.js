@@ -276,11 +276,11 @@ export default class UrlProcessor {
       let value;
       for (const match in matches) {
         const attributes = matches[match];
+        let format = 'HH:mm';
+        const time = dayjs();
+
         switch (varName) {
           case 'now':
-            const time = dayjs();
-
-            let format = 'HH:mm';
             if (attributes.output) {
               format = attributes.output;
             }
