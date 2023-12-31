@@ -3,7 +3,7 @@ import '../../scss/style.scss';
 import Env from './Env.js';
 import Helper from './Helper.js';
 import { setupDOMWithEnvVariables } from './home/Settings.js';
-//  import Suggestions from './home/Suggestions.js';
+import Suggestions from './home/Suggestions.js';
 import 'bootstrap.native/dist/bootstrap-native.esm.min.js';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -23,6 +23,8 @@ export default class Home {
     this.addLinkSearch();
 
     this.env = new Env(null, this.logger);
+
+    console.log(this.env)
 
     // Init environment.
     await this.env.populate();
@@ -73,7 +75,7 @@ export default class Home {
     const params = this.env.getParams();
     params.query = document.getElementById('query').value;
 
-    const paramStr = Env.getUrlParamStr(params);
+    const paramStr = Env.getURLSearchParameterObject(params);
 
     // "?" causes Chrome to translate plus signs properly into %2B
     // even when called from address bar.
@@ -95,39 +97,14 @@ export default class Home {
         break;
     }
 
-    // this.suggestions = new Suggestions('#query', '#suggestions', this.env);
-    this.setToggleByQuery(Home);
-  }
-
-  setToggleByQuery(Home) {
+    this.suggestions = new Suggestions('#query', '#suggestions', this.env);
     document.querySelector('#query').focus();
-    document.querySelector('#query').addEventListener('input', () => {
-      this.toggleByQuery();
-    });
-    document.querySelector('#suggestions').addEventListener('click', () => {
-      this.toggleByQuery();
-    });
-  }
-
-  toggleByQuery() {
-    // Toggle display of navbar and examples.
-    if (
-      document.querySelector('#query').value.trim() === ''
-      // &&  this.suggestions.selected === -1
-    ) {
-      document.querySelector('nav.navbar').style.display = 'block';
-      document.querySelector('#intro').style.display = 'block';
-      document.querySelector('#alert').style.display = 'block';
-    } else {
-      document.querySelector('nav.navbar').style.display = 'none';
-      document.querySelector('#intro').style.display = 'none';
-      document.querySelector('#alert').style.display = 'none';
-    }
-    Home.setHeights();
   }
 
   setLocationHash() {
     const paramStr = this.env.getParamStr();
+
+    console.log({ paramStr });
     window.location.hash = '#' + paramStr;
   }
 
