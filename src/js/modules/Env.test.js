@@ -1,10 +1,5 @@
 import Env from './Env.js';
 
-const getUrlHashFooBar = () => {
-  const hash = 'foo=bar&baz=boo';
-  return hash;
-};
-
 describe('Env', () => {
   describe('getDefaultLanguageAndCountry', () => {
     test('browser returns language and country', () => {
@@ -24,8 +19,8 @@ describe('Env', () => {
       });
     });
   });
-  test('getUrlParams', () => {
-    Env.getUrlHash = getUrlHashFooBar;
+  describe('getUrlParams', () => {
+    Env.getUrlHash = jest.fn().mockReturnValue('foo=bar&baz=boo');
     expect(Env.getUrlParams()).toEqual({ foo: 'bar', baz: 'boo' });
   });
 });
