@@ -88,8 +88,8 @@ export default class Env {
    */
   getParamStr(moreParams) {
     const params = this.getParams();
-    Object.assign(params, moreParams);
-    const paramStr = Env.getUrlParamStr(params);
+    console.log({ params });
+    const paramStr = Env.getURLSearchParameterObject(params);
     return paramStr;
   }
 
@@ -333,26 +333,24 @@ export default class Env {
    */
   static getUrlParams() {
     const urlParamStr = this.getUrlHash();
-    const urlParams = new URLSearchParams(urlParamStr);
-    const params = {};
-    urlParams.forEach((value, key) => {
-      params[key] = value;
-    });
-    return params;
+    return urlParamStr.split('&').reduce((acc, value) => {
+      const [key, val] = value.split('=');
+      return {
+        ...acc,
+        [key]: val
+      }
+    }, {});
   }
 
   /**
    * Build URL param string from param object.
    *
-   * @param {object} params       - List of parameters.
+   * @param {object} params       - Object of parameters.
    *
    * @return {string} urlParamStr - Parameter as URL string.
    */
-  static getUrlParamStr(params) {
-    const urlParams = new URLSearchParams();
-    for (const key in params) {
-      urlParams.set(key, params[key]);
-    }
+  static getURLSearchParameterObject(params) {
+    const urlParams = new URLSearchParams(params);
     urlParams.sort();
     return urlParams;
   }
