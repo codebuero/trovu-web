@@ -8,6 +8,9 @@ import jsyaml from 'js-yaml';
 
 /** Set and remember the environment. */
 
+const DEFAULT_LANGUAGE = 'en';
+const DEFAULT_COUNTRY = 'de';
+
 export default class Env {
   /**
    * Set helper variables.
@@ -38,7 +41,6 @@ export default class Env {
     if (!env) {
       return;
     }
-    console.log(env);
     for (const key in env) {
       this[key] = env[key];
     }
@@ -222,45 +224,15 @@ export default class Env {
   /**
    * Get the default language and country from browser.
    *
-   * @return {object} [language, country] - The default language and country.
+   * @return {object} [language, country] - The submitted language and country.
    */
   async getDefaultLanguageAndCountry() {
-    let { language, country } = this.getLanguageAndCountryFromBrowser();
+    const [_language, _country] = navigator.language.split('-');
 
-    // Set defaults.
-    language = language || 'en';
-    country = country || 'us';
-
-    // Ensure lowercase.
-    language = language.toLowerCase();
-    country = country.toLowerCase();
+    const language = (_language) ? _language.toLowerCase() : DEFAULT_LANGUAGE;
+    const country = (_country) ? _country.toLowerCase() : DEFAULT_COUNTRY;
 
     return { language, country };
-  }
-
-  /**
-   * Get the default language and country from browser.
-   *
-   * @return {object} [language, country] - The default language and country.
-   */
-  getLanguageAndCountryFromBrowser() {
-    const languageStr = this.getNavigatorLanguage();
-    let language, country;
-    if (languageStr) {
-      [language, country] = languageStr.split('-');
-    }
-
-    return { language, country };
-  }
-
-  /**
-   * Wrapper for navigator language, capsuled to enable unit testing.
-   *
-   * @return {string} navigatorLanguage - The browser's value of navigator.language.
-   */
-  getNavigatorLanguage() {
-    const languageStr = navigator.language;
-    return languageStr;
   }
 
   /**

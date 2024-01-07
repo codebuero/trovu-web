@@ -1,6 +1,10 @@
 import Env from './Env.js';
 
 let env;
+let language = ''
+global.navigator = {
+  language
+};
 
 describe('Env', () => {
   beforeEach(() => {
@@ -8,17 +12,17 @@ describe('Env', () => {
   });
   describe('getDefaultLanguageAndCountry', () => {
     test('browser returns language and country', () => { 
-      env.getNavigatorLanguage = jest.fn(() => 'en-DE');
+      language = 'en-DE';
       expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
         language: 'en',
         country: 'de'
       });
     });
     test('browser returns only language', () => {
-      env.getNavigatorLanguage = jest.fn(() => 'en');
+      language = 'en';
       expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
         language: 'en',
-        country: 'us'
+        country: 'de'
       });
     });
   });
