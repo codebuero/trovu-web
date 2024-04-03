@@ -9,7 +9,7 @@ test('TimeType.parse', async() => {
     '-1': new Date(2020, 0, 1, 11)
   };
   for (const input in expectations) {
-    const output = await TimeType.parse(input);
+    const output = TimeType.parse(input);
     expect(output.toTimeString()).toEqual(expectations[input].toTimeString());
   }
 });

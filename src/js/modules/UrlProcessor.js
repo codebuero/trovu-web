@@ -165,32 +165,32 @@ export default class UrlProcessor {
     return processedArgument;
   }
 
-  static async processAttributeType(attributes, processedArgument, env) {
+  static processAttributeType(attributes, processedArgument, env) {
     const locale = env.language + '-' + env.country.toUpperCase();
     switch (attributes.type) {
       case 'date':
-        processedArgument = await this.processTypeDate(
+        processedArgument = this.processTypeDate(
           processedArgument,
           locale,
           attributes
         );
         break;
       case 'time':
-        processedArgument = await this.processTypeTime(
+        processedArgument = this.processTypeTime(
           processedArgument,
           locale,
           attributes
         );
         break;
       case 'city':
-        processedArgument = await this.processTypeCity(processedArgument, env);
+        processedArgument = this.processTypeCity(processedArgument, env);
         break;
     }
     return processedArgument;
   }
 
   static async processTypeDate(processedArgument, locale, attributes) {
-    const dateNative = await DateType.parse(processedArgument, locale);
+    const dateNative = DateType.parse(processedArgument, locale);
     const date = dayjs(dateNative);
     // If date could be parsed:
     // Set argument.
@@ -204,8 +204,8 @@ export default class UrlProcessor {
     return processedArgument;
   }
 
-  static async processTypeTime(processedArgument, locale, attributes) {
-    const timeNative = await TimeType.parse(processedArgument);
+  static processTypeTime(processedArgument, locale, attributes) {
+    const timeNative = TimeType.parse(processedArgument);
     const time = dayjs(timeNative);
     // If time could be parsed:
     // Set argument.
@@ -219,8 +219,8 @@ export default class UrlProcessor {
     return processedArgument;
   }
 
-  static async processTypeCity(processedArgument, env) {
-    const city = await CityType.parse(processedArgument, env);
+  static processTypeCity(processedArgument, env) {
+    const city = CityType.parse(processedArgument, env);
     // If city could be parsed:
     // Set argument.
     if (city) {
@@ -276,11 +276,11 @@ export default class UrlProcessor {
       let value;
       for (const match in matches) {
         const attributes = matches[match];
+        let format = 'HH:mm';
+        const time = dayjs();
+
         switch (varName) {
           case 'now':
-            const time = dayjs();
-
-            let format = 'HH:mm';
             if (attributes.output) {
               format = attributes.output;
             }

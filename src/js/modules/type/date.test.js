@@ -25,7 +25,7 @@ test('DateType.parse', async() => {
     th: new Date(2021, 0, 7)
   };
   for (const input in expectations) {
-    const output = await DateType.parse(input, locale);
+    const output = DateType.parse(input, locale);
     expect(output.toDateString()).toEqual(expectations[input].toDateString());
   }
 });

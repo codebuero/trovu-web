@@ -1,6 +1,7 @@
 /** @module CallHandler */
 import Env from './Env.js';
 import Helper from './Helper.js';
+import Logger from './Logger.js';
 import ShortcutFinder from './ShortcutFinder.js';
 import UrlProcessor from './UrlProcessor.js';
 
@@ -13,7 +14,7 @@ export default class CallHandler {
   static async handleCall() {
     Helper.logVersion();
 
-    const env = new Env();
+    const env = new Env(null, new Logger());
     await env.populate();
 
     if (env.debug) {
@@ -60,7 +61,7 @@ export default class CallHandler {
       return response;
     }
 
-    const shortcut = await ShortcutFinder.findShortcut(env);
+    const shortcut = ShortcutFinder.findShortcut(env);
 
     if (!shortcut) {
       response.status = 'not_found';
@@ -129,7 +130,7 @@ export default class CallHandler {
         break;
     }
     params.status = response.status;
-    const paramStr = Env.getUrlParamStr(params);
+    const paramStr = Env.getURLSearchParameterObject(params);
     const redirectUrl = '../index.html#' + paramStr;
     return redirectUrl;
   }

@@ -1,13 +1,15 @@
 /** @module Env */
 import pkg from '../../../package.json';
 import Helper from './Helper.js';
-import Logger from './Logger.js';
 import NamespaceFetcher from './NamespaceFetcher.js';
 import QueryParser from './QueryParser.js';
 import countriesList from 'countries-list';
 import jsyaml from 'js-yaml';
 
 /** Set and remember the environment. */
+
+const DEFAULT_LANGUAGE = 'en';
+const DEFAULT_COUNTRY = 'de';
 
 export default class Env {
   /**
@@ -39,7 +41,6 @@ export default class Env {
     if (!env) {
       return;
     }
-    console.log(env);
     for (const key in env) {
       this[key] = env[key];
     }
@@ -89,8 +90,8 @@ export default class Env {
    */
   getParamStr(moreParams) {
     const params = this.getParams();
-    Object.assign(params, moreParams);
-    const paramStr = Env.getUrlParamStr(params);
+    console.log({ params });
+    const paramStr = Env.getURLSearchParameterObject(params);
     return paramStr;
   }
 
@@ -119,8 +120,8 @@ export default class Env {
 
     // Assign before, to also catch "debug" and "reload" in params and query.
     Object.assign(this, params);
-    const params_from_query = QueryParser.parse(this.query);
-    Object.assign(this, params_from_query);
+    const _queryParams = QueryParser.parse(this.query);
+    Object.assign(this, _queryParams);
 
     if (typeof params.github === 'string' && params.github !== '') {
       await this.setWithUserConfigFromGithub(params);
@@ -128,7 +129,7 @@ export default class Env {
 
     // Assign again, to override user config.
     Object.assign(this, params);
-    Object.assign(this, params_from_query);
+    Object.assign(this, _queryParams);
 
     await this.setDefaults();
 
@@ -223,45 +224,15 @@ export default class Env {
   /**
    * Get the default language and country from browser.
    *
-   * @return {object} [language, country] - The default language and country.
+   * @return {object} [language, country] - The submitted language and country.
    */
   async getDefaultLanguageAndCountry() {
-    let { language, country } = this.getLanguageAndCountryFromBrowser();
+    const [_language, _country] = navigator.language.split('-');
 
-    // Set defaults.
-    language = language || 'en';
-    country = country || 'us';
-
-    // Ensure lowercase.
-    language = language.toLowerCase();
-    country = country.toLowerCase();
+    const language = (_language) ? _language.toLowerCase() : DEFAULT_LANGUAGE;
+    const country = (_country) ? _country.toLowerCase() : DEFAULT_COUNTRY;
 
     return { language, country };
-  }
-
-  /**
-   * Get the default language and country from browser.
-   *
-   * @return {object} [language, country] - The default language and country.
-   */
-  getLanguageAndCountryFromBrowser() {
-    const languageStr = this.getNavigatorLanguage();
-    let language, country;
-    if (languageStr) {
-      [language, country] = languageStr.split('-');
-    }
-
-    return { language, country };
-  }
-
-  /**
-   * Wrapper for navigator language, capsuled to enable unit testing.
-   *
-   * @return {string} navigatorLanguage - The browser's value of navigator.language.
-   */
-  getNavigatorLanguage() {
-    const languageStr = navigator.language;
-    return languageStr;
   }
 
   /**
@@ -334,26 +305,24 @@ export default class Env {
    */
   static getUrlParams() {
     const urlParamStr = this.getUrlHash();
-    const urlParams = new URLSearchParams(urlParamStr);
-    const params = {};
-    urlParams.forEach((value, key) => {
-      params[key] = value;
-    });
-    return params;
+    return urlParamStr.split('&').reduce((acc, value) => {
+      const [key, val] = value.split('=');
+      return {
+        ...acc,
+        [key]: val
+      }
+    }, {});
   }
 
   /**
    * Build URL param string from param object.
    *
-   * @param {object} params       - List of parameters.
+   * @param {object} params       - Object of parameters.
    *
    * @return {string} urlParamStr - Parameter as URL string.
    */
-  static getUrlParamStr(params) {
-    const urlParams = new URLSearchParams();
-    for (const key in params) {
-      urlParams.set(key, params[key]);
-    }
+  static getURLSearchParameterObject(params) {
+    const urlParams = new URLSearchParams(params);
     urlParams.sort();
     return urlParams;
   }
