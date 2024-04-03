@@ -56,7 +56,7 @@ export const normalizeTags = (shortcuts) => {
   }
 }
 
-export const getDefaultOptions = (options) =>{
+export const getDefaultOptions = (options) => {
   options.data = options.data === undefined ? './data/' : options.data;
   options.shortcuts =
     options.shortcuts === undefined ? 'shortcuts' : options.shortcuts;
