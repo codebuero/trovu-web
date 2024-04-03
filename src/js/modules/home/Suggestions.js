@@ -1,6 +1,5 @@
 /** @module Suggestions */
 import QueryParser from '../QueryParser.js';
-import 'font-awesome/css/font-awesome.min.css';
 
 export default class Suggestions {
   constructor(querySelector, suggestionsSelector, env) {

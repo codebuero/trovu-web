@@ -58,8 +58,8 @@ export default [
             src: 'src/js/userscripts/*.user.js',
             dest: 'dist/public/userscripts/',
           },
-          { src: 'src/opensearch/', dest: 'dist/public/' },
-          { src: 'node_modules/font-awesome/fonts/', dest: 'dist/public/' },
+          { src: 'src/opensearch/', dest: 'dist/public/' }
+          // { src: 'node_modules/font-awesome/fonts/', dest: 'dist/public/' },
         ],
       }),
     ],

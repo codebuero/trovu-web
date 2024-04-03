@@ -6,7 +6,6 @@ import { setupDOMWithEnvVariables } from './home/Settings.js';
 import Suggestions from './home/Suggestions.js';
 import 'bootstrap.native/dist/bootstrap-native.esm.min.js';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'font-awesome/css/font-awesome.min.css';
 
 /** Set and manage the homepage. */
 

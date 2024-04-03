@@ -13,7 +13,7 @@
     "build:jsdoc": "jsdoc --configure jsdoc.json",
     "build": "rollup --config --environment INCLUDE_DEPS,BUILD:production",
     "watch": "rollup --config --watch",
-    "serve": "http-server ./dist/public/ --port 8081 --cors",
+    "serve": "http-server ./dist/ --port 8081 --cors",
     "compile-data": "node -r esm src/js/cli.js compile-data --output ./dist/public/data.json",
     "normalize-data": "node -r esm src/js/cli.js normalize-data",
     "clean": "rm -r dist/",
@@ -80,7 +80,6 @@
     "countries-list": "^2.6.1",
     "dayjs": "^1.11.7",
     "detect-browser": "^5.2.0",
-    "font-awesome": "^4.7.0",
     "js-yaml": "^4.1.0"
   }
 }
