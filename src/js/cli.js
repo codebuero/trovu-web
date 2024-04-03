@@ -1,7 +1,7 @@
 import { load, write } from './modules/DataManager';
 import UrlProcessor from './modules/UrlProcessor';
 import { Command } from 'commander';
-import fs from 'fs';
+import fs from 'node:fs';
 import jsyaml from 'js-yaml';
 
 const program = new Command();
