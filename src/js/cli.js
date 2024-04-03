@@ -1,4 +1,4 @@
-import DataManager from './modules/DataManager';
+import { load, write } from './modules/DataManager';
 import UrlProcessor from './modules/UrlProcessor';
 import { Command } from 'commander';
 import fs from 'fs';
@@ -42,14 +42,14 @@ program
 program.parse();
 
 function compileData(options) {
-  const data = DataManager.load();
+  const data = load();
   const json = JSON.stringify(data);
   fs.writeFileSync(options.output, json, 'utf8');
 }
 
 function normalizeData() {
-  const data = DataManager.load();
-  DataManager.write(data);
+  const data = load();
+  write(data);
 }
 
 function migratePlaceholders(options) {
@@ -57,7 +57,7 @@ function migratePlaceholders(options) {
   const shortcutsPath = options.shortcuts;
   const typesPath = options.types;
   const filter = options.filter;
-  const data = DataManager.load(dataPath, shortcutsPath, typesPath, filter);
+  const data = load(dataPath, shortcutsPath, typesPath, filter);
   for (const namespace in data.shortcuts) {
     for (const key in data.shortcuts[namespace]) {
       let shortcut = data.shortcuts[namespace][key];
@@ -85,7 +85,7 @@ function migratePlaceholders(options) {
       }
       data.shortcuts[namespace][key] = shortcut;
     }
-    DataManager.write(data, dataPath, shortcutsPath, typesPath);
+    write(data, dataPath, shortcutsPath, typesPath);
   }
 }
 
@@ -138,7 +138,7 @@ function isOnlyNumber(str) {
 }
 
 function migrateExamples(options) {
-  const data = DataManager.load(options);
+  const data = load(options);
   for (const namespace in data.shortcuts) {
     for (const key in data.shortcuts[namespace]) {
       const shortcut = data.shortcuts[namespace][key];
@@ -158,6 +158,6 @@ function migrateExamples(options) {
       }
       data.shortcuts[namespace][key] = shortcut;
     }
-    DataManager.write(data, options);
+    write(data, options);
   }
 }
