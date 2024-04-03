@@ -2,3 +2,4 @@ node_modules/
 /dist/
 /src/js/userscripts/*.user.js
 deploy.sh
+.idea
