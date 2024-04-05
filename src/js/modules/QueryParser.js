@@ -18,10 +18,10 @@ export default class QueryParser {
     env.query = env.query.trim();
     Object.assign(env, QueryParser.setFlagsFromQuery(env));
 
-    [env.keyword, env.argumentString] = this.getKeywordAndArgumentString(
+    const { keyword, argumentString } = this.getKeywordAndArgumentString(
       env.query
     );
-    env.keyword = env.keyword.toLowerCase();
+    Object.assign(env, { keyword: keyword.toLowerCase(), argumentString });
     env.args = this.getArguments(env.argumentString);
 
     [env.extraNamespaceName, env.keyword] = this.getExtraNamespace(env.keyword);
@@ -46,18 +46,7 @@ export default class QueryParser {
    * - {string} argumentString    - The whole argument string.
    */
   static getKeywordAndArgumentString(query) {
-    let keyword, argumentString;
-
-    [keyword, argumentString] = Helper.splitKeepRemainder(query, '+', 2);
-
-    if (typeof keyword === 'undefined') {
-      keyword = '';
-    }
-    if (typeof argumentString === 'undefined') {
-      argumentString = '';
-    }
-
-    return [keyword, argumentString];
+    return Helper.splitKeepRemainder(query, '+', 2);
   }
 
   /**
@@ -70,6 +59,7 @@ export default class QueryParser {
   static getArguments(argumentString) {
     let args;
     if (argumentString) {
+      // TODO: this delimiter is not the same as in the splitKeepRemainder function
       args = argumentString.split(',');
     } else {
       args = [];
@@ -87,6 +77,9 @@ export default class QueryParser {
    * - {string} extraNamespaceName - If found, the name of the extra namespace.
    * - {string} keyword            - The new keyword.
    */
+  // TODO: fuck me, that code wants a pattern matching parser or
+  //       even better, aligned all namespaces, that they're following
+  //       one name scheme, without a leading dot
   static getExtraNamespace(keyword) {
     // Check for extraNamespace in keyword:
     //   split at dot

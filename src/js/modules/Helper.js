@@ -14,11 +14,11 @@ export default class Helper {
    * @return {array} parts      - The splitted parts.
    */
   static splitKeepRemainder(string, delimiter, n) {
-    if (!string) {
-      return [];
-    }
     const parts = string.split(delimiter);
-    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(' ')]);
+    return {
+      keyword: parts.slice(0, n - 1)[0] ?? '',
+      argumentString: parts.slice(n - 1).join(' ') ?? ''
+    }
   }
 
   /**
