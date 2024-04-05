@@ -9,8 +9,15 @@ import copy from 'rollup-plugin-copy';
 import watch from 'rollup-plugin-watch';
 import gitInfo from 'rollup-plugin-git-info';
 import execute from 'rollup-plugin-execute';
+import replace from '@rollup/plugin-replace';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const isProduction = process.env.BUILD === 'production';
+
+console.log(process.env);
+console.log(process.argv);
 
 const output = {
   dir: 'dist/public/',
@@ -44,7 +51,7 @@ export default [
         output: 'dist/public/style.css',
         outputStyle: isProduction ? 'compressed' : 'expanded',
       }),
-      execute('npm run compile-data'),
+      // execute('npm run compile-data'),
       isProduction && terser(),
       html({
         fileName: 'index.html',
@@ -62,6 +69,10 @@ export default [
           // { src: 'node_modules/font-awesome/fonts/', dest: 'dist/public/' },
         ],
       }),
+      replace({
+        exclude: ['node_modules/**', 'data/**'],
+        SUBFOLDER: JSON.stringify(process.env.SUBFOLDER || ''),
+      })
     ],
   },
   {
@@ -76,6 +87,10 @@ export default [
         fileName: 'process/index.html',
         template: template('src/html/process.html'),
       }),
+      replace({
+        exclude: ['node_modules/**', 'data/**'],
+        SUBFOLDER: JSON.stringify(process.env.SUBFOLDER || ''),
+      })
     ],
   },
 ];

@@ -48,7 +48,7 @@ export default class QueryParser {
   static getKeywordAndArgumentString(query) {
     let keyword, argumentString;
 
-    [keyword, argumentString] = Helper.splitKeepRemainder(query, ' ', 2);
+    [keyword, argumentString] = Helper.splitKeepRemainder(query, '+', 2);
 
     if (typeof keyword === 'undefined') {
       keyword = '';

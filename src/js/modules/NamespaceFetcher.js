@@ -194,17 +194,20 @@ export default class NamespaceFetcher {
         namespaceInfo.shortcuts = {};
         continue;
       }
-      this.env.logger.success(
-        `Success fetching via ${this.env.reload ? 'reload' : 'cache'} ${
-          namespaceInfo.url
-        }`
-      );
+      // this.env.logger.success(
+      //   `Success fetching via ${this.env.reload ? 'reload' : 'cache'} ${
+      //     namespaceInfo.url
+      //   }`
+      // );
 
       const text = await response.text();
+      console.log("processResponses", text);
       namespaceInfo.shortcuts = this.parseShortcutsFromYml(
         text,
         namespaceInfo.url
       );
+
+      console.log("shortcuts", namespaceInfo.shortcuts);
 
       namespaceInfo.shortcuts = this.checkKeySyntax(
         namespaceInfo.shortcuts,

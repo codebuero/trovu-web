@@ -5,6 +5,7 @@ import Logger from './Logger.js';
 import ShortcutFinder from './ShortcutFinder.js';
 import UrlProcessor from './UrlProcessor.js';
 
+const logger = new Logger();
 /** Handle a call. */
 
 export default class CallHandler {
@@ -13,8 +14,7 @@ export default class CallHandler {
    */
   static async handleCall() {
     Helper.logVersion();
-
-    const env = new Env(null, new Logger());
+    const env = new Env(null, logger);
     await env.populate();
 
     if (env.debug) {
@@ -31,9 +31,8 @@ export default class CallHandler {
       redirectUrl = this.getRedirectUrlToHome(response);
     }
 
-    env.logger.info('Redirect to:   ' + redirectUrl);
-
     if (env.debug) {
+      console.log('Debug mode, abort redirect', redirectUrl);
       return;
     }
 
@@ -49,7 +48,6 @@ export default class CallHandler {
    */
   static async getRedirectResponse(env) {
     const response = {};
-
     if (env.reload && !env.query) {
       response.status = 'reloaded';
       return response;
@@ -130,8 +128,9 @@ export default class CallHandler {
         break;
     }
     params.status = response.status;
+    // TODO: fix redirect to home in case of missing shortcut or other issues with the redirect
     const paramStr = Env.getURLSearchParameterObject(params);
-    const redirectUrl = '../index.html#' + paramStr;
+    const redirectUrl = `${SUBFOLDER}/index.html`;
     return redirectUrl;
   }
 }

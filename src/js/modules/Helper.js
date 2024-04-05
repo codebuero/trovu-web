@@ -18,7 +18,7 @@ export default class Helper {
       return [];
     }
     const parts = string.split(delimiter);
-    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(' ')]);
   }
 
   /**
@@ -54,8 +54,10 @@ export default class Helper {
     env.logger.success(
       `Success fetching via ${env.reload ? 'reload' : 'cache'} ${url}`
     );
-    const text = await response.text();
-    return text;
+    const content = await response.text();
+    // eslint-disable-next-line
+    // (env.debug) ? env.logger.success(JSON.parse(content)) : undefined;
+    return content;
   }
 
   static logVersion() {

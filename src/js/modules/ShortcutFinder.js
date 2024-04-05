@@ -6,10 +6,11 @@ export default class ShortcutFinder {
    *
    * @param {string} keyword    - The keyword of the query.
    * @param {array} args        - The arguments of the query.
+   * @param {object} namespaceInfos - tbd
    *
    * @return {array} shortcuts  - The array of found shortcuts.
    */
-  static matchShortcuts(keyword, args, namespaceInfos, reload, debug) {
+  static matchShortcuts(keyword, args, namespaceInfos) {
     for (const namespaceInfo of Object.values(namespaceInfos)) {
       if (!namespaceInfo.shortcuts) {
         continue;

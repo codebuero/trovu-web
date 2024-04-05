@@ -5,6 +5,7 @@ import NamespaceFetcher from './NamespaceFetcher.js';
 import QueryParser from './QueryParser.js';
 import countriesList from 'countries-list';
 import jsyaml from 'js-yaml';
+import { PROCESS_URL } from './constants';
 
 /** Set and remember the environment. */
 
@@ -90,15 +91,12 @@ export default class Env {
    */
   getParamStr(moreParams) {
     const params = this.getParams();
-    console.log({ params });
-    const paramStr = Env.getURLSearchParameterObject(params);
-    return paramStr;
+    return Env.getURLSearchParameterObject(params);
   }
 
   getProcessUrl(moreParams) {
     const paramStr = this.getParamStr(moreParams);
-    const processUrl = 'process/index.html?#' + paramStr;
-    return processUrl;
+    return PROCESS_URL + paramStr;
   }
 
   /**
@@ -110,7 +108,6 @@ export default class Env {
     if (!params) {
       params = Env.getUrlParams();
     }
-
     // Set debug and reload from URL params.
     for (const paramName of ['debug', 'reload']) {
       if (params[paramName] === '1') {
@@ -130,8 +127,7 @@ export default class Env {
     // Assign again, to override user config.
     Object.assign(this, params);
     Object.assign(this, _queryParams);
-
-    await this.setDefaults();
+    this.setDefaults();
 
     // Add extra namespace to namespaces.
     if (this.extraNamespaceName) {
@@ -195,7 +191,7 @@ export default class Env {
     const config = await this.getUserConfigFromGithub(params);
     if (config) {
       Object.assign(this, config);
-    }
+    };
   }
 
   /**
@@ -212,8 +208,7 @@ export default class Env {
       this.logger.error(`Error reading Github config from ${configUrl}`);
     }
     try {
-      const config = jsyaml.load(configYml);
-      return config;
+      return jsyaml.load(configYml);
     } catch (error) {
       this.logger.error(`Error parsing ${configUrl}: ${error.message}`);
     }
@@ -226,7 +221,7 @@ export default class Env {
    *
    * @return {object} [language, country] - The submitted language and country.
    */
-  async getDefaultLanguageAndCountry() {
+  getDefaultLanguageAndCountry() {
     const [_language, _country] = navigator.language.split('-');
 
     const language = (_language) ? _language.toLowerCase() : DEFAULT_LANGUAGE;
@@ -238,11 +233,13 @@ export default class Env {
   /**
    * Set default environment variables if they are still empty.
    */
-  async setDefaults() {
+  setDefaults() {
     let language, country;
 
     if (typeof this.language !== 'string' || typeof this.country !== 'string') {
-      ({ language, country } = await this.getDefaultLanguageAndCountry());
+      const { language: defaultLanguage, country: defaultCountry } = this.getDefaultLanguageAndCountry();
+      language = defaultLanguage;
+      country = defaultCountry;
     }
 
     // Default language.
@@ -269,22 +266,24 @@ export default class Env {
    */
   async getData() {
     let text, url;
+
+    // TODO: lets not mixup server and client code in one file
     if (typeof window !== 'undefined') {
-      url = `/data.json?${this.commitHash}`;
+      // eslint-disable-next-line
+      url = `${SUBFOLDER}/data.json?${this.commitHash}`;
       text = await Helper.fetchAsync(url, this);
     } else {
       const fs = require('fs');
       text = fs.readFileSync('./dist/public/data.json', 'utf8');
     }
     if (!text) {
-      return false;
+      return null;
     }
     try {
-      const data = await JSON.parse(text);
-      return data;
+      return await JSON.parse(text);
     } catch (error) {
       this.env.logger.error(`Error parsing JSON in ${url}: ${error.message}`);
-      return false;
+      return null;
     }
   }
 
@@ -294,8 +293,7 @@ export default class Env {
    * @return {string} hash - The hash string.
    */
   static getUrlHash() {
-    const hash = window.location.hash.substr(1);
-    return hash;
+    return window.location.hash.substr(1);
   }
 
   /**

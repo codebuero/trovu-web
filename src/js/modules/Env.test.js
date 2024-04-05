@@ -13,14 +13,14 @@ describe('Env', () => {
   describe('getDefaultLanguageAndCountry', () => {
     test('browser returns language and country', () => { 
       language = 'en-DE';
-      expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
+      expect(env.getDefaultLanguageAndCountry()).toEqual({
         language: 'en',
         country: 'de'
       });
     });
     test('browser returns only language', () => {
       language = 'en';
-      expect(env.getDefaultLanguageAndCountry()).resolves.toEqual({
+      expect(env.getDefaultLanguageAndCountry()).toEqual({
         language: 'en',
         country: 'de'
       });

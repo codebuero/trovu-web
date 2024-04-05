@@ -6,6 +6,7 @@ import { setupDOMWithEnvVariables } from './home/Settings.js';
 import Suggestions from './home/Suggestions.js';
 import 'bootstrap.native/dist/bootstrap-native.esm.min.js';
 import 'bootstrap/dist/css/bootstrap.css';
+import { PROCESS_URL } from './constants';
 
 /** Set and manage the homepage. */
 
@@ -76,11 +77,11 @@ export default class Home {
 
     const paramStr = Env.getURLSearchParameterObject(params);
 
+    const redirect = PROCESS_URL + paramStr.toString();
+    console.log('calling process url with param strings:', redirect);
     // "?" causes Chrome to translate plus signs properly into %2B
     // even when called from address bar.
-    const processUrl = 'process/index.html?#' + paramStr;
-
-    return processUrl;
+    return redirect;
   }
 
   setQueryElement() {
@@ -102,8 +103,6 @@ export default class Home {
 
   setLocationHash() {
     const paramStr = this.env.getParamStr();
-
-    console.log({ paramStr });
     window.location.hash = '#' + paramStr;
   }
 
