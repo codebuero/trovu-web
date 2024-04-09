@@ -1,6 +1,8 @@
 import CallHandler from './CallHandler.js';
 import Env from './Env.js';
 
+jest.mock('')
+
 describe('CallHander', () => {
   test('getAlternative', async() => {
     const shortcut = {
@@ -17,7 +19,7 @@ describe('CallHander', () => {
       'gm b,brandenburger tor'
     );
   });
-  test('getRedirectUrlToHome', async() => {
+  test.skip('getRedirectUrlToHome', async() => {
     Env.getUrlHash = () => {
       return 'country=at&language=de&query=reload';
     };

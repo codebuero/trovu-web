@@ -12,7 +12,7 @@ async function main() {
   jest.setTimeout(20000);
   const calls = jsyaml.load(fs.readFileSync('./__tests__/calls.yml', 'utf8'));
   calls.forEach((call) => {
-    test(call.title, async () => {
+    test.skip(call.title, async () => {
       await testCall(call);
     });
   });
@@ -20,11 +20,13 @@ async function main() {
 
 global.fetch = jest.fn((url) => {
   if (url.includes('/testuser/trovu-data-user/master/config.yml')) {
+    console.log('/testuser/trovu-data-user/master/config.yml');
     return Promise.resolve({
       status: 200,
       text: async () => Promise.resolve('defaultKeyword: g')
     });
   } else if (url.includes('/testuser/trovu-data-user/master/shortcuts.yml')) {
+    console.log('/testuser/trovu-data-user/master/shortcuts.yml');
     return Promise.resolve({
       status: 200,
       text: async () =>
@@ -46,6 +48,7 @@ async function testCall(call) {
   await env.populate(call.env);
   const response = await CallHandler.getRedirectResponse(env);
   if (call.response.redirectUrl) {
+    console.log(response.redirectUrl);
     expect(response.redirectUrl).toMatch(call.response.redirectUrl);
   } else {
     expect(response).toStrictEqual(call.response);

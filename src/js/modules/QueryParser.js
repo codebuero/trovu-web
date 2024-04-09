@@ -86,20 +86,22 @@ export default class QueryParser {
     //   but don't split up country namespace names.
     let extraNamespaceName;
     if (keyword.match(/.\./)) {
-      [extraNamespaceName, keyword] = Helper.splitKeepRemainder(
+      const { first, rest } = Helper.splitKeepRemainder(
         keyword,
         '.',
         2
       );
+      keyword = rest;
       // If extraNamespace started with a dot, it will be empty
       // so let's split it again, and add the dot.
-      if (extraNamespaceName === '') {
-        [extraNamespaceName, keyword] = Helper.splitKeepRemainder(
+      if (first === '') {
+        const { first, rest } = Helper.splitKeepRemainder(
           keyword,
           '.',
           2
         );
-        extraNamespaceName = '.' + extraNamespaceName;
+        keyword = rest;
+        extraNamespaceName = '.' + first;
       }
     }
 

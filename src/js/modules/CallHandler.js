@@ -4,6 +4,7 @@ import Helper from './Helper.js';
 import Logger from './Logger.js';
 import ShortcutFinder from './ShortcutFinder.js';
 import UrlProcessor from './UrlProcessor.js';
+import { PATH_SUBFOLDER } from './constants';
 
 const logger = new Logger();
 /** Handle a call. */
@@ -49,11 +50,13 @@ export default class CallHandler {
   static async getRedirectResponse(env) {
     const response = {};
     if (env.reload && !env.query) {
+      console.log('reload and no query found');
       response.status = 'reloaded';
       return response;
     }
 
     if (!env.query) {
+      console.log('no query found');
       response.status = 'not_found';
       response.redirectUrl = false;
       return response;
@@ -61,7 +64,10 @@ export default class CallHandler {
 
     const shortcut = ShortcutFinder.findShortcut(env);
 
+    console.log({ shortcut });
+
     if (!shortcut) {
+      console.log('no shortcut found');
       response.status = 'not_found';
       return response;
     }
@@ -82,7 +88,7 @@ export default class CallHandler {
     response.status = 'found';
 
     env.logger.info('Used template: ' + response.redirectUrl);
-
+    console.log(response);
     response.redirectUrl = UrlProcessor.replaceVariables(response.redirectUrl, {
       language: env.language,
       country: env.country
@@ -130,7 +136,7 @@ export default class CallHandler {
     params.status = response.status;
     // TODO: fix redirect to home in case of missing shortcut or other issues with the redirect
     const paramStr = Env.getURLSearchParameterObject(params);
-    const redirectUrl = `${SUBFOLDER}/index.html`;
+    const redirectUrl = `${PATH_SUBFOLDER}/index.html`;
     return redirectUrl;
   }
 }

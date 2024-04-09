@@ -5,7 +5,7 @@ import NamespaceFetcher from './NamespaceFetcher.js';
 import QueryParser from './QueryParser.js';
 import countriesList from 'countries-list';
 import jsyaml from 'js-yaml';
-import { PROCESS_URL } from './constants';
+import { PATH_SUBFOLDER, PROCESS_URL } from './constants';
 
 /** Set and remember the environment. */
 
@@ -270,7 +270,7 @@ export default class Env {
     // TODO: lets not mixup server and client code in one file
     if (typeof window !== 'undefined') {
       // eslint-disable-next-line
-      url = `${SUBFOLDER}/data.json?${this.commitHash}`;
+      url = `${PATH_SUBFOLDER}/data.json?${this.commitHash}`;
       text = await Helper.fetchAsync(url, this);
     } else {
       const fs = require('fs');
